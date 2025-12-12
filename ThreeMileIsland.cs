@@ -358,7 +358,7 @@ namespace ThreeMileIsland
             Console.WriteLine("TURBINE, FILTER, CONDENSER VIEW");
             Console.WriteLine();
             Console.WriteLine("Turbines Operating:  " + TCNT + " of 4");
-            Console.WriteLine("Filters Active:      " + FC + " of 3");
+            Console.WriteLine("Filters Active:      " + FCNT + " of 3");
             Console.WriteLine("Condenser Status:    " + (BU[6] > 0 ? "ACTIVE" : "OFF"));
             Console.WriteLine();
             Console.WriteLine("Press ESC to return to main menu");
@@ -507,7 +507,7 @@ namespace ThreeMileIsland
             if (TMP0 == 0) Console.WriteLine("                              SCRAM");
             if (UC1 > 0) Console.WriteLine("                              ECCS" + (UC3 > 0 ? "     ESCS" : ""));
             if (BU[11] > 0) Console.WriteLine("                              RADLEAK");
-            if (FC == 0) Console.WriteLine("                              FLTR" + (AIR > 0 ? "     AIR" : ""));
+            if (FCNT == 0) Console.WriteLine("                              FLTR" + (AIR > 0 ? "     AIR" : ""));
             if (BU[6] > 0) Console.WriteLine("                              CNDSER");
             if (BU[4] > 0) Console.WriteLine("                              STMER");
             if (LEAK) Console.WriteLine("                              PCSLEAK");
