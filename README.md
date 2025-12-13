@@ -6,6 +6,8 @@ This is a C# conversion of the classic Three Mile Island nuclear reactor simulat
 
 It has been my life-long dream to bring one of my favorite Apple II games into the 21st century, but converting the original Integer Basic code always seemed to be a huge lift. I decided to turn this into an exercise in "Vibe Coding" to see if AI could complete what I never had time to do, and I'm so glad I did. Thanks to the help of Claude Sonnet, I was able to do much of the work in a matter of minutes.
 
+Like most AI generated code, Claude's first iteration wouldn't even compile, much less run. However, it gave me a huge leg up, and didn't take much effort on my part to get the code ship-shape and running.
+
 ## About the Original Game
 
 Three Mile Island was a nuclear reactor management simulation game that challenged players to safely operate a nuclear power plant while managing various systems including:
@@ -20,7 +22,7 @@ The game featured real-time simulation of reactor physics, equipment failures, a
 ## Building and Running
 
 ### Prerequisites
-- .NET 6.0 SDK or later
+- .NET 8.0 SDK or later. Will run on Windows, MacOS, or Linux.
 
 ### To Build
 ```bash
