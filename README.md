@@ -84,8 +84,14 @@ Avoid:
 
 ## Original Source
 
-This conversion is based on the Apple II BASIC source code from the original Three Mile Island game.
+This conversion is based on the Apple II BASIC source code from the original Three Mile Island game. I've included it in this repo.
 
 ## License
 
 This is a fan conversion for educational purposes. Original game rights belong to their respective owners.
+
+## Future Plans
+
+- Continue to modernize the code with improved method, property, and variable naming.
+- Separate game logic from presentation layer to allow for a variety of front-ends (Blazor, Maui, Native App, etc.)
+- Restore original low-res graphics and sounds.
