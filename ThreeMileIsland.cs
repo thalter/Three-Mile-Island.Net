@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 namespace ThreeMileIsland
@@ -7,12 +6,12 @@ namespace ThreeMileIsland
     class Program
     {
         // Game variables
-        static int SCNT, DCNT, CNT, OTMP, TEMP;
+        static int SCNT, DCNT, CNT, OTMP, reactorCoreTemperature;
         static int TMP0, TMP1, TMP2, TMP3, TMP4;
         static bool VFLG, UFLG, TFLG, FFLG, EFLG;
         static int UC1, UC2, UC3, UC4, UC5, UC6, UC7, UC8;
-        static int EOUT, COST, MAIN, DMND, ACTP, MAXP;
-        static int AIR, FCNT, TCNT;
+        static int electricityOutput, operatingCost, MAIN, electricityDemand, ACTP, MAXP;
+        static int AIR, filterCount, turbinesOperating;
         
         // Arrays
         static int[] VC = new int[20];
@@ -69,7 +68,7 @@ namespace ThreeMileIsland
         static int FF0, VM0, VM1, UM0, UM1, TM0, TM1;
         static int GC0, GC1, GM0, GM1;
         static int LOSS1, LOSS2, RAD1, RD1, RD5;
-        static int TMPMD;
+        static int meltdownTemperature;
         
         static Random rand = new Random();
         
@@ -95,28 +94,28 @@ namespace ThreeMileIsland
             SR0 = 25; SR1 = 25;
             DC0 = 50; DC1 = 15;
             DM0 = 75; DM1 = 25;
-            FF0 = 120; FCNT = FF0;
+            FF0 = 120; filterCount = FF0;
             VM0 = 1; VM1 = 1;
             UM0 = 2; UM1 = 2;
             TM0 = 5; TM1 = 5;
             GC0 = 750; GC1 = 50;
             GM0 = 10; GM1 = 10;
             
-            MAIN = 0; COST = 200;
+            MAIN = 0; operatingCost = 200;
             MAXP = 0; ACTP = 0;
-            EOUT = 0; DMND = 100;
+            electricityOutput = 0; electricityDemand = 100;
             LOSS1 = -200; LOSS2 = -500;
             CP0 = 50; CP = CP0;
             LK0 = 100;
             RAD1 = 50;
             RD5 = 25; RD1 = 75;
-            TMPMD = 2500;
+            meltdownTemperature = 2500;
             TMP0 = 0;
             TMP1 = 400;
             TMP2 = 500;
             TMP3 = 600;
             TMP4 = 750;
-            TEMP = 0;
+            reactorCoreTemperature = 0;
             CNT = 0; SCNT = 0;
             DCNT = DC0 + RND(DC1) * (RND(3) - 1);
             DAY = 1;
@@ -339,7 +338,7 @@ namespace ThreeMileIsland
         {
             Console.WriteLine("CONTAINMENT VIEW");
             Console.WriteLine();
-            Console.WriteLine("Core Temperature:    " + TEMP + " DEG");
+            Console.WriteLine("Core Temperature:    " + reactorCoreTemperature + " DEG");
             Console.WriteLine("Containment Pressure: " + BU[1] + "00 PSI");
             Console.WriteLine("Containment Water:    " + BU[7] + ",000 GAL");
             Console.WriteLine("PCS Pressure:         " + (BU[2] * 100 + 1200) + " PSI");
@@ -357,8 +356,8 @@ namespace ThreeMileIsland
         {
             Console.WriteLine("TURBINE, FILTER, CONDENSER VIEW");
             Console.WriteLine();
-            Console.WriteLine("Turbines Operating:  " + TCNT + " of 4");
-            Console.WriteLine("Filters Active:      " + FCNT + " of 3");
+            Console.WriteLine("Turbines Operating:  " + turbinesOperating + " of 4");
+            Console.WriteLine("Filters Active:      " + filterCount + " of 3");
             Console.WriteLine("Condenser Status:    " + (BU[6] > 0 ? "ACTIVE" : "OFF"));
             Console.WriteLine();
             Console.WriteLine("Press ESC to return to main menu");
@@ -374,7 +373,7 @@ namespace ThreeMileIsland
         {
             Console.WriteLine("REACTOR CORE VIEW");
             Console.WriteLine();
-            Console.WriteLine("Core Temperature:     " + TEMP + " DEG");
+            Console.WriteLine("Core Temperature:     " + reactorCoreTemperature + " DEG");
             Console.WriteLine("Control Rods:         " + TMP0 + " DEG");
             Console.WriteLine("Pumps Required:       " + CNT);
             Console.WriteLine();
@@ -447,14 +446,14 @@ namespace ThreeMileIsland
             Console.WriteLine("               COST ANALYSIS");
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine("OPERATING COST:   $ " + COST + ",000");
+            Console.WriteLine("OPERATING COST:   $ " + operatingCost + ",000");
             Console.WriteLine();
             Console.WriteLine("MAINTENANCE COST: $ " + MAIN + (MAIN > 0 ? ",000" : ""));
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine("ELECTRIC DEMAND: " + DMND + " MEGAWATTS");
+            Console.WriteLine("ELECTRIC DEMAND: " + electricityDemand + " MEGAWATTS");
             Console.WriteLine();
-            Console.WriteLine("ELECTRIC OUTPUT: " + EOUT + " MEGAWATTS");
+            Console.WriteLine("ELECTRIC OUTPUT: " + electricityOutput + " MEGAWATTS");
             Console.WriteLine();
             Console.WriteLine("(ELECTRIC DEMAND CHANGES AT " + FormatTime(SCNT + DCNT) + " )");
             Console.WriteLine();
@@ -479,7 +478,7 @@ namespace ThreeMileIsland
             Console.Clear();
             Console.WriteLine("            OPERATIONAL STATUS");
             Console.WriteLine();
-            Console.WriteLine("CORE TEMP:      " + (GC[1] > 0 || RND(2) == 0 ? TEMP + " DEG" : RND(100).ToString()));
+            Console.WriteLine("CORE TEMP:      " + (GC[1] > 0 || RND(2) == 0 ? reactorCoreTemperature + " DEG" : RND(100).ToString()));
             Console.WriteLine();
             Console.WriteLine("CTRL RODS:      " + (GC[2] > 0 || RND(2) == 0 ? TMP0 + " DEG" : RND(100).ToString()));
             Console.WriteLine();
@@ -502,17 +501,17 @@ namespace ThreeMileIsland
             
             // Display warnings
             if (CP == 32767) Console.WriteLine("                              SEALED");
-            if (TEMP > TMP3) Console.WriteLine("                              TEMP");
+            if (reactorCoreTemperature > TMP3) Console.WriteLine("                              TEMP");
             if (FRDMG) Console.WriteLine("                              FR DAMAGE");
             if (TMP0 == 0) Console.WriteLine("                              SCRAM");
             if (UC1 > 0) Console.WriteLine("                              ECCS" + (UC3 > 0 ? "     ESCS" : ""));
             if (BU[11] > 0) Console.WriteLine("                              RADLEAK");
-            if (FCNT == 0) Console.WriteLine("                              FLTR" + (AIR > 0 ? "     AIR" : ""));
+            if (filterCount == 0) Console.WriteLine("                              FLTR" + (AIR > 0 ? "     AIR" : ""));
             if (BU[6] > 0) Console.WriteLine("                              CNDSER");
             if (BU[4] > 0) Console.WriteLine("                              STMER");
             if (LEAK) Console.WriteLine("                              PCSLEAK");
-            if (EOUT > 0 && EOUT < DMND) Console.WriteLine("                              BROWNOUT");
-            if (EOUT == 0) Console.WriteLine("                              BLACKOUT");
+            if (electricityOutput > 0 && electricityOutput < electricityDemand) Console.WriteLine("                              BROWNOUT");
+            if (electricityOutput == 0) Console.WriteLine("                              BLACKOUT");
             
             Console.WriteLine();
             Console.WriteLine("Press ESC to return to main menu");
@@ -567,14 +566,14 @@ namespace ThreeMileIsland
                   (TU[3] == 13 ? 1 : 0) + (TU[4] == 13 ? 1 : 0);
             
             // Update temperature
-            OTMP = TEMP;
-            if (TEMP > 0)
+            OTMP = reactorCoreTemperature;
+            if (reactorCoreTemperature > 0)
             {
-                TEMP = TEMP + ((BU[2] < CNT) ? CNT : 0) + 
+                reactorCoreTemperature += ((BU[2] < CNT) ? CNT : 0) + 
                        ((PI[3] == 10 || BU[4] == 14) ? CNT : 0);
-                TEMP = TEMP + Math.Sign(CNT - ((PI[11] != 10 ? UC1 : 0) + 
-                       (PI[8] != 10 ? UC2 : 0))) * CNT;
-                TEMP = TEMP - ((BU[4] < 14 && BU[6] < 12 && PI[3] != 10) ? 1 : 0);
+                reactorCoreTemperature += Math.Sign(CNT - ((PI[11] != 10 ? UC1 : 0) + 
+                                                           (PI[8] != 10 ? UC2 : 0))) * CNT;
+                reactorCoreTemperature -= ((BU[4] < 14 && BU[6] < 12 && PI[3] != 10) ? 1 : 0);
             }
             
             // Check for day rollover
@@ -582,7 +581,7 @@ namespace ThreeMileIsland
             {
                 SCNT = 0;
                 DAY++;
-                COST += RND(10) + 1;
+                operatingCost += RND(10) + 1;
                 MAIN = 0;
             }
             
@@ -591,9 +590,9 @@ namespace ThreeMileIsland
             {
                 DCNT = DC0 + RND(DC1) * (RND(3) - 1);
                 int c = DM0 + RND(DM1);
-                DMND += (SCNT < 720) ? c : -c / 2;
-                if (DMND > 1000) DMND = 1000;
-                if (DMND < 100) DMND = 100;
+                electricityDemand += (SCNT < 720) ? c : -c / 2;
+                if (electricityDemand > 1000) electricityDemand = 1000;
+                if (electricityDemand < 100) electricityDemand = 100;
             }
             else
             {
@@ -636,7 +635,7 @@ namespace ThreeMileIsland
             }
             
             // Check for meltdown
-            if (TEMP > TMPMD)
+            if (reactorCoreTemperature > meltdownTemperature)
             {
                 Console.Clear();
                 Console.WriteLine();
@@ -682,7 +681,7 @@ namespace ThreeMileIsland
         
         static string FormatFlushTime()
         {
-            int c = FF0 - FCNT;
+            int c = FF0 - filterCount;
             if (c >= 0)
             {
                 int hours = c / 60;
