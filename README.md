@@ -4,9 +4,9 @@
 <img width="560" height="384" alt="three-mile-island_1" src="https://github.com/user-attachments/assets/45cee4df-aabf-4aeb-8a89-9de5a566132a" />
 </p>
 
-This is a C# conversion of the classic Three Mile Island nuclear reactor simulation game originally written in Applesoft BASIC for the Apple II computer.
+This is a C# conversion of the classic Three Mile Island nuclear reactor simulation game originally written in Integer BASIC for the Apple II computer.
 
-It has been my life-long dream to bring one of my favorite Apple II games into the 21st century, but converting the original Integer Basic code always seemed to be a huge lift. I decided to turn this into an exercise in "Vibe Coding" to see if AI could complete what I never had time to do, and I'm so glad I did. Thanks to the help of Claude Sonnet, I was able to do much of the work in a matter of minutes.
+It has been my life-long dream to bring one of my favorite Apple II games into the 21st century, but converting the original Integer BASIC code always seemed to be a huge lift. I decided to turn this into an exercise in "Vibe Coding" to see if AI could complete what I never had time to do, and I'm so glad I did. Thanks to the help of Claude Sonnet, I was able to do much of the work in a matter of minutes.
 
 Like most AI generated code, Claude's first iteration wouldn't even compile, much less run. However, it gave me a huge leg up, and didn't take much effort on my part to get the code ship-shape and running.
 
@@ -86,7 +86,7 @@ Avoid:
 
 ## Original Source
 
-This conversion is based on the Apple II BASIC source code from the original Three Mile Island game. I've included it in this repo.
+This conversion is based on the Apple II Integer BASIC source code from the original Three Mile Island game. I've included the [original source code](https://github.com/thalter/Three-Mile-Island.Net/blob/main/tmi.bas) in this repo, however I make no claims of ownership of it.
 
 ## License
 
