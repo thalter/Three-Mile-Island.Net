@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 5: Cost Analysis view
 /// Shows operating costs, maintenance, electric demand/output, and profit
 /// </summary>
-public class CostAnalysisScreen : GameScreen
+public class CostAnalysisScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public CostAnalysisScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Console.Clear();

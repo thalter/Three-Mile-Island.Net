@@ -1,6 +1,4 @@
-using System;
-
-namespace ThreeMileIsland;
+﻿namespace ThreeMileIsland;
 
 /// <summary>
 /// ASCII art rendering system to mimic Apple II low-resolution graphics.
@@ -20,8 +18,8 @@ public class LowResGraphics
     private int _currentColor = 15;
 
     // Apple II low-res color palette mapped to console colors
-    private static readonly ConsoleColor[] ColorMap = new ConsoleColor[]
-    {
+    private static readonly ConsoleColor[] ColorMap =
+    [
         ConsoleColor.Black,        // 0 - Black
         ConsoleColor.DarkMagenta,  // 1 - Magenta (dark red/purple)
         ConsoleColor.DarkBlue,     // 2 - Dark Blue
@@ -38,14 +36,14 @@ public class LowResGraphics
         ConsoleColor.Yellow,       // 13 - Yellow
         ConsoleColor.DarkCyan,     // 14 - Aqua
         ConsoleColor.White         // 15 - White
-    };
+    ];
 
     // Color names for display
-    private static readonly string[] ColorNames = new[]
-    {
+    private static readonly string[] ColorNames =
+    [
         "BLK", "MAG", "DBL", "PUR", "DGR", "GR1", "BLU", "LBL",
         "BRN", "ORG", "GR2", "PNK", "GRN", "YEL", "AQU", "WHT"
-    };
+    ];
 
     /// <summary>
     /// Clear the screen to black
@@ -116,7 +114,7 @@ public class LowResGraphics
     {
         Console.SetCursorPosition(0, startRow);
 
-        // Use half-block characters: ? (upper half) and ? (lower half)
+        // Use half-block characters: ▀ (upper half) and ▄ (lower half)
         // Each console line represents 2 graphics rows
         for (int y = 0; y < Height; y += 2)
         {
@@ -129,14 +127,14 @@ public class LowResGraphics
                 {
                     // Both halves same color - use full block
                     Console.ForegroundColor = ColorMap[topColor];
-                    Console.Write('?');
+                    Console.Write('█');
                 }
                 else
                 {
                     // Different colors - use half block
                     Console.ForegroundColor = ColorMap[topColor];
                     Console.BackgroundColor = ColorMap[bottomColor];
-                    Console.Write('?');
+                    Console.Write('▀');
                 }
             }
             Console.ResetColor();
@@ -161,13 +159,13 @@ public class LowResGraphics
                 if (topColor == bottomColor)
                 {
                     Console.ForegroundColor = ColorMap[topColor];
-                    Console.Write('?');
+                    Console.Write('█');
                 }
                 else
                 {
                     Console.ForegroundColor = ColorMap[topColor];
                     Console.BackgroundColor = ColorMap[bottomColor];
-                    Console.Write('?');
+                    Console.Write('▀');
                 }
             }
             Console.ResetColor();
@@ -261,7 +259,7 @@ public class LowResGraphics
         Console.SetCursorPosition(0, startRow);
 
         // Map colors to ASCII characters for simple display
-        char[] colorChars = { ' ', '.', ':', ';', '+', 'x', 'X', '#', '@', '%', '&', '*', 'O', '0', '=', '?' };
+        char[] colorChars = [' ', '.', ':', ';', '+', 'x', 'X', '#', '@', '%', '&', '*', 'O', '0', '=', '█'];
 
         for (int y = 0; y < Height; y++)
         {

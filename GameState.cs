@@ -7,7 +7,7 @@ namespace ThreeMileIsland;
 public class GameState
 {
     // Random number generator
-    public Random Rnd { get; } = new Random();
+    public Random Rnd { get; } = new();
 
     // === Game Mode and Screen ===
     public int CurrentScreen { get; set; } = -1;  // DYN - current display screen (-1=menu, 0-7=screens)
@@ -32,7 +32,7 @@ public class GameState
     public const int TempMeltdown = 2500;    // TMPMD
 
     // === Counter Variable ===
-    public int PumpCount { get; set; } = 0;   // CNT - pumps required count
+    public int PumpsRequired { get; set; } = 0;   // CNT - pumps required count
 
     // === Valve Arrays (19 valves) ===
     public int[] ValveCountdown { get; } = new int[20];   // VC - valve countdown timers
@@ -44,15 +44,15 @@ public class GameState
 
     // === Pump Arrays (24 pumps) ===
     public int[] PumpCountdown { get; } = new int[25];     // UC - pump countdown timers
-    public int[] PumpActive { get; } = new int[25];        // PU - pump status (0=repair, 1=off, 12=on)
+    public int[] PumpStatus { get; } = new int[25];        // PU - pump status (0=repair, 1=off, 12=on)
 
     // === Turbine Arrays (4 turbines) ===
     public int[] TurbineCountdown { get; } = new int[5];   // TC - turbine countdown timers
-    public int[] TurbineActive { get; } = new int[5];      // TU - turbine status (0=repair, 10=off, 13=on)
+    public TurbineStatus[] TurbineActive { get; } = new TurbineStatus[5];      // TU - turbine status (0=repair, 10=off, 13=on)
 
     // === Filter Arrays (3 filters) ===
     public int[] FilterCondition { get; } = new int[4];    // SC - filter condition countdown
-    public int[] FilterStatus { get; } = new int[4];       // FI - filter status (8=clean, 10=dirty)
+    public FilterStatus[] FilterStatus { get; } = new FilterStatus[4];       // FI - filter status (8=clean, 10=dirty)
     public int[] FilterSootLevel { get; } = new int[4];    // SL - soot level
     public int[] FilterSootPressure { get; } = new int[4]; // SP - soot pressure
 
@@ -102,7 +102,6 @@ public class GameState
 
     // === Pressure and Damage ===
     public int ContainmentPressure { get; set; } = 50;  // CP - containment pressure
-    public const int ContainmentPressure0 = 50;         // CP0 - initial pressure
     public bool FuelRodDamage { get; set; } = false;    // FRDMG
     public bool AirLeak { get; set; } = false;          // AIR
     public int LeakThreshold { get; set; } = 100;       // LK0
@@ -229,13 +228,15 @@ public class GameState
 
         // Initialize pipes (line 32500-32502)
         for (int p = 1; p <= 25; p++)
-            PipeStatus[p] = 10;
+        {
+            PipeStatus[p] = GameEngine.Empty; // All pipes start EMPTY
+        }
 
         // Initialize pumps (lines 32504-32508)
         for (int u = 1; u <= 24; u++)
         {
             PumpCountdown[u] = Rnd.Next(PumpFailure1) + PumpFailure0;
-            PumpActive[u] = 1;  // All pumps start OFF
+            PumpStatus[u] = 1;  // All pumps start OFF
         }
 
         // Initialize valves (lines 32510-32514)
@@ -252,7 +253,7 @@ public class GameState
         // Initialize filters (lines 32520-32524)
         for (int f = 1; f <= 3; f++)
         {
-            FilterStatus[f] = 10;  // Dirty
+            FilterStatus[f] = ThreeMileIsland.FilterStatus.Dirty;  // Dirty
             FilterSootLevel[f] = 0;
             FilterCondition[f] = Rnd.Next(SootRepair1) + SootRepair0;
         }
@@ -261,7 +262,7 @@ public class GameState
         for (int t = 1; t <= 4; t++)
         {
             TurbineCountdown[t] = Rnd.Next(TurbineFailure1) + TurbineFailure0;
-            TurbineActive[t] = 10;  // All turbines start OFF
+            TurbineActive[t] = TurbineStatus.Offline;  // All turbines start OFFLINE
         }
 
         // Initialize control rods (lines 32532-32534)
@@ -320,4 +321,31 @@ public class GameState
             return $"{d}/{hours:D2}:{minutes:D2}";
         return $"{hours:D2}:{minutes:D2}";
     }
+}
+
+/// <summary>
+/// Represents the status of a turbine
+/// </summary>
+public enum TurbineStatus
+{
+    /// <summary>Under repair</summary>
+    Repair = 0,
+
+    /// <summary>Offline but functional</summary>
+    Offline = 10,
+
+    /// <summary>Online and generating power</summary>
+    Online = 13
+}
+
+/// <summary>
+/// Represents the status of an air filter
+/// </summary>
+public enum FilterStatus
+{
+    /// <summary>Filter is clean</summary>
+    Clean = 8,
+
+    /// <summary>Filter is dirty</summary>
+    Dirty = 10
 }

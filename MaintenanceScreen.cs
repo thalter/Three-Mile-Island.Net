@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 4: Maintenance Schedule view
 /// Shows status of pumps, valves, and turbines with repair times
 /// </summary>
-public class MaintenanceScreen : GameScreen
+public class MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Console.Clear();
@@ -92,16 +87,16 @@ public class MaintenanceScreen : GameScreen
             return;
         }
 
-        if (State.PumpActive[u] == 1)
+        if (State.PumpStatus[u] == 1)
         {
             Console.Write("OFF");
             return;
         }
 
-        if (State.PumpActive[u] == 12)
+        if (State.PumpStatus[u] == 12)
         {
             Console.Write("ON");
-            int c = State.SimulationCount + State.PumpCountdown[u] / State.PumpCount;
+            int c = State.SimulationCount + State.PumpCountdown[u] / State.PumpsRequired;
             Console.SetCursorPosition(11 + c1, row);
             Console.Write(State.FormatTime(c, true));
             return;
@@ -148,7 +143,7 @@ public class MaintenanceScreen : GameScreen
         if (State.ValveActive[v] == 12)
         {
             Console.Write("OPEN");
-            int c = State.SimulationCount + State.ValveCountdown[v] / State.PumpCount;
+            int c = State.SimulationCount + State.ValveCountdown[v] / State.PumpsRequired;
             Console.SetCursorPosition(11 + c1, row);
             Console.Write(State.FormatTime(c, true));
             return;
@@ -184,16 +179,16 @@ public class MaintenanceScreen : GameScreen
             return;
         }
 
-        if (State.TurbineActive[t] == 10)
+        if (State.TurbineActive[t] == TurbineStatus.Offline)
         {
             Console.Write("OFF LINE");
             return;
         }
 
-        if (State.TurbineActive[t] == 13)
+        if (State.TurbineActive[t] == TurbineStatus.Online)
         {
             Console.Write("ON LINE");
-            int c = State.SimulationCount + State.TurbineCountdown[t] / State.PumpCount;
+            int c = State.SimulationCount + State.TurbineCountdown[t] / State.PumpsRequired;
             Console.SetCursorPosition(13, row);
             Console.Write(State.FormatTime(c, true));
             return;
@@ -282,9 +277,9 @@ public class MaintenanceScreen : GameScreen
 
     private void RepairPump(int u)
     {
-        if (State.PumpActive[u] == 0) return;
+        if (State.PumpStatus[u] == 0) return;
 
-        State.PumpActive[u] = 0;
+        State.PumpStatus[u] = 0;
         State.PumpCountdown[u] = State.Rnd.Next(GameState.PumpRepair1) + GameState.PumpRepair0;
         State.MaintenanceCost += State.Rnd.Next(GameState.PumpMaint1) + GameState.PumpMaint0;
     }
@@ -300,16 +295,16 @@ public class MaintenanceScreen : GameScreen
 
     private void RepairTurbine(int t)
     {
-        if (State.TurbineActive[t] == 0) return;
+        if (State.TurbineActive[t] == TurbineStatus.Repair) return;
 
-        State.TurbineActive[t] = 0;
+        State.TurbineActive[t] = TurbineStatus.Repair;
         State.TurbineCountdown[t] = State.Rnd.Next(GameState.TurbineRepair1) + GameState.TurbineRepair0;
         State.MaintenanceCost += GameState.TurbineMaint0 + State.Rnd.Next(GameState.TurbineMaint1);
 
-        State.TurbineCount = (State.TurbineActive[1] == 13 ? 1 : 0) +
-                             (State.TurbineActive[2] == 13 ? 1 : 0) +
-                             (State.TurbineActive[3] == 13 ? 1 : 0) +
-                             (State.TurbineActive[4] == 13 ? 1 : 0);
+        State.TurbineCount = (State.TurbineActive[1] == TurbineStatus.Online ? 1 : 0) +
+                             (State.TurbineActive[2] == TurbineStatus.Online ? 1 : 0) +
+                             (State.TurbineActive[3] == TurbineStatus.Online ? 1 : 0) +
+                             (State.TurbineActive[4] == TurbineStatus.Online ? 1 : 0);
     }
 
     public override void ShowLabel()

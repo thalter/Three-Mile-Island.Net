@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 3: Pump House view
 /// Shows emergency pumps, water tanks, and radiation levels
 /// </summary>
-public class PumpHouseScreen : GameScreen
+public class PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Graphics.Clear();
@@ -203,23 +198,23 @@ public class PumpHouseScreen : GameScreen
     private void DrawPumps()
     {
         // Pumps S, T, U (19-21)
-        Graphics.SetColor(State.PumpActive[19]);
+        Graphics.SetColor(State.PumpStatus[19]);
         Graphics.VLine(33, 35, 14);
 
-        Graphics.SetColor(State.PumpActive[20]);
+        Graphics.SetColor(State.PumpStatus[20]);
         Graphics.VLine(33, 35, 15);
 
-        Graphics.SetColor(State.PumpActive[21]);
+        Graphics.SetColor(State.PumpStatus[21]);
         Graphics.VLine(33, 35, 16);
 
         // Pumps V, W, X (22-24)
-        Graphics.SetColor(State.PumpActive[22]);
+        Graphics.SetColor(State.PumpStatus[22]);
         Graphics.VLine(34, 36, 28);
 
-        Graphics.SetColor(State.PumpActive[23]);
+        Graphics.SetColor(State.PumpStatus[23]);
         Graphics.VLine(34, 36, 29);
 
-        Graphics.SetColor(State.PumpActive[24]);
+        Graphics.SetColor(State.PumpStatus[24]);
         Graphics.VLine(34, 36, 30);
     }
 
@@ -269,11 +264,11 @@ public class PumpHouseScreen : GameScreen
 
     private void TogglePump(int u)
     {
-        if (State.PumpActive[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (State.PumpStatus[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        int c = State.PumpActive[u] == 1 ? 12 : 1;
-        State.PumpActive[u] = c;
+        int c = State.PumpStatus[u] == 1 ? 12 : 1;
+        State.PumpStatus[u] = c;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }

@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 2: Reactor Core view
 /// Shows the control rod positions and reactor core cross-section
 /// </summary>
-public class ReactorCoreScreen : GameScreen
+public class ReactorCoreScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public ReactorCoreScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Graphics.Clear();
@@ -221,7 +216,7 @@ public class ReactorCoreScreen : GameScreen
         Console.SetCursorPosition(0, 21);
         Console.Write($"TEMP={State.Temperature}  ");
         Console.SetCursorPosition(19, 21);
-        Console.Write($"CNT={State.PumpCount}");
+        Console.Write($"CNT={State.PumpsRequired}");
     }
 
     public override void ShowLabel()

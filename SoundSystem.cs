@@ -5,14 +5,9 @@ namespace ThreeMileIsland;
 /// <summary>
 /// Sound system for audio feedback. Uses console beeps to mimic Apple II speaker sounds.
 /// </summary>
-public class SoundSystem
+public class SoundSystem(bool enabled = true)
 {
-    private readonly bool _soundEnabled;
-
-    public SoundSystem(bool enabled = true)
-    {
-        _soundEnabled = enabled && OperatingSystem.IsWindows();
-    }
+    private readonly bool _soundEnabled = enabled && OperatingSystem.IsWindows();
 
     /// <summary>
     /// Play a single beep (CALL BELL equivalent)

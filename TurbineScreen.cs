@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 1: Turbine, Filter, and Condenser view
 /// Shows turbines, air filters, condenser, and cooling tower
 /// </summary>
-public class TurbineScreen : GameScreen
+public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Graphics.Clear();
@@ -55,25 +50,25 @@ public class TurbineScreen : GameScreen
         Graphics.VLine(7, 12, 21);
 
         // Turbine 1 (A)
-        Graphics.SetColor(State.TurbineActive[1]);
+        Graphics.SetColor((int)State.TurbineActive[1]);
         Graphics.VLine(8, 13, 10);
         Graphics.VLine(7, 13, 11);
         Graphics.VLine(6, 13, 12);
 
         // Turbine 2 (B)
-        Graphics.SetColor(State.TurbineActive[2]);
+        Graphics.SetColor((int)State.TurbineActive[2]);
         Graphics.VLine(6, 13, 14);
         Graphics.VLine(6, 13, 15);
         Graphics.VLine(6, 13, 16);
 
         // Turbine 3 (C)
-        Graphics.SetColor(State.TurbineActive[3]);
+        Graphics.SetColor((int)State.TurbineActive[3]);
         Graphics.VLine(6, 13, 18);
         Graphics.VLine(6, 13, 19);
         Graphics.VLine(6, 13, 20);
 
         // Turbine 4 (D)
-        Graphics.SetColor(State.TurbineActive[4]);
+        Graphics.SetColor((int)State.TurbineActive[4]);
         Graphics.VLine(6, 13, 22);
         Graphics.VLine(7, 13, 23);
         Graphics.VLine(8, 13, 24);
@@ -127,7 +122,7 @@ public class TurbineScreen : GameScreen
     private void DrawFilters()
     {
         // Filter 1 (A)
-        Graphics.SetColor(State.FilterStatus[1]);
+        Graphics.SetColor((int)State.FilterStatus[1]);
         Graphics.HLine(6, 7, 32);
         Graphics.HLine(5, 8, 33);
         Graphics.HLine(4, 9, 34);
@@ -135,7 +130,7 @@ public class TurbineScreen : GameScreen
         Graphics.HLine(6, 7, 36);
 
         // Filter 2 (B)
-        Graphics.SetColor(State.FilterStatus[2]);
+        Graphics.SetColor((int)State.FilterStatus[2]);
         Graphics.HLine(12, 13, 32);
         Graphics.HLine(11, 14, 33);
         Graphics.HLine(10, 15, 34);
@@ -143,7 +138,7 @@ public class TurbineScreen : GameScreen
         Graphics.HLine(12, 13, 36);
 
         // Filter 3 (C)
-        Graphics.SetColor(State.FilterStatus[3]);
+        Graphics.SetColor((int)State.FilterStatus[3]);
         Graphics.HLine(18, 19, 32);
         Graphics.HLine(17, 20, 33);
         Graphics.HLine(16, 21, 34);
@@ -221,7 +216,7 @@ public class TurbineScreen : GameScreen
         {
             Graphics.SetColor(Colors.Gray2);
             State.AirLeak = false;
-            State.PipeStatus[24] = 10;
+            State.PipeStatus[24] = GameEngine.Empty;
             State.FlushCountdown = GameState.FlushTime0;
         }
 
@@ -356,43 +351,43 @@ public class TurbineScreen : GameScreen
     private void DrawPumps()
     {
         // Pumps G, H, I (7-9)
-        Graphics.SetColor(State.PumpActive[7]);
+        Graphics.SetColor(State.PumpStatus[7]);
         Graphics.VLine(17, 19, 8);
 
-        Graphics.SetColor(State.PumpActive[8]);
+        Graphics.SetColor(State.PumpStatus[8]);
         Graphics.VLine(17, 19, 9);
 
-        Graphics.SetColor(State.PumpActive[9]);
+        Graphics.SetColor(State.PumpStatus[9]);
         Graphics.VLine(17, 19, 10);
 
         // Pumps J, K, L (10-12)
-        Graphics.SetColor(State.PumpActive[10]);
+        Graphics.SetColor(State.PumpStatus[10]);
         Graphics.VLine(22, 24, 20);
 
-        Graphics.SetColor(State.PumpActive[11]);
+        Graphics.SetColor(State.PumpStatus[11]);
         Graphics.VLine(22, 24, 21);
 
-        Graphics.SetColor(State.PumpActive[12]);
+        Graphics.SetColor(State.PumpStatus[12]);
         Graphics.VLine(22, 24, 22);
 
         // Pumps M, N, O (13-15)
-        Graphics.SetColor(State.PumpActive[13]);
+        Graphics.SetColor(State.PumpStatus[13]);
         Graphics.VLine(29, 31, 30);
 
-        Graphics.SetColor(State.PumpActive[14]);
+        Graphics.SetColor(State.PumpStatus[14]);
         Graphics.VLine(29, 31, 31);
 
-        Graphics.SetColor(State.PumpActive[15]);
+        Graphics.SetColor(State.PumpStatus[15]);
         Graphics.VLine(29, 31, 32);
 
         // Pumps P, Q, R (16-18)
-        Graphics.SetColor(State.PumpActive[16]);
+        Graphics.SetColor(State.PumpStatus[16]);
         Graphics.VLine(37, 39, 34);
 
-        Graphics.SetColor(State.PumpActive[17]);
+        Graphics.SetColor(State.PumpStatus[17]);
         Graphics.VLine(37, 39, 35);
 
-        Graphics.SetColor(State.PumpActive[18]);
+        Graphics.SetColor(State.PumpStatus[18]);
         Graphics.VLine(37, 39, 36);
     }
 
@@ -471,11 +466,11 @@ public class TurbineScreen : GameScreen
 
     private void TogglePump(int u)
     {
-        if (State.PumpActive[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (State.PumpStatus[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        int c = State.PumpActive[u] == 1 ? 12 : 1;
-        State.PumpActive[u] = c;
+        int c = State.PumpStatus[u] == 1 ? 12 : 1;
+        State.PumpStatus[u] = c;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }
@@ -493,30 +488,37 @@ public class TurbineScreen : GameScreen
 
     private void ToggleTurbine(int t)
     {
-        if (State.TurbineActive[t] == 0 || State.TurbineCountdown[t] > GameState.TurbineFailure1 + GameState.TurbineFailure0)
+        if (State.TurbineActive[t] == TurbineStatus.Repair || 
+            State.TurbineCountdown[t] > GameState.TurbineFailure1 + GameState.TurbineFailure0)
             return;
 
-        int c = State.TurbineActive[t] == 10 ? 13 : 10;
-        State.TurbineActive[t] = c;
-        State.TurbineCount = (State.TurbineActive[1] == 13 ? 1 : 0) +
-                             (State.TurbineActive[2] == 13 ? 1 : 0) +
-                             (State.TurbineActive[3] == 13 ? 1 : 0) +
-                             (State.TurbineActive[4] == 13 ? 1 : 0);
+        TurbineStatus newStatus = State.TurbineActive[t] == TurbineStatus.Offline 
+            ? TurbineStatus.Online 
+            : TurbineStatus.Offline;
+        
+        State.TurbineActive[t] = newStatus;
+        
+        State.TurbineCount = (State.TurbineActive[1] == TurbineStatus.Online ? 1 : 0) +
+                             (State.TurbineActive[2] == TurbineStatus.Online ? 1 : 0) +
+                             (State.TurbineActive[3] == TurbineStatus.Online ? 1 : 0) +
+                             (State.TurbineActive[4] == TurbineStatus.Online ? 1 : 0);
+        
         State.TurbineCountdown[t] -= State.Rnd.Next(GameState.TurbineAdjust1) + GameState.TurbineAdjust0;
         DrawTurbines();
     }
 
     private void ToggleFilter(int f)
     {
-        int c = 8;
-        if (State.FilterSootLevel[f] > 10 || State.FilterStatus[f] == 8)
-            c = 10;
-        State.FilterStatus[f] = c;
+        ThreeMileIsland.FilterStatus newStatus = ThreeMileIsland.FilterStatus.Clean;
+        if (State.FilterSootLevel[f] > 10 || State.FilterStatus[f] == ThreeMileIsland.FilterStatus.Clean)
+            newStatus = ThreeMileIsland.FilterStatus.Dirty;
+        
+        State.FilterStatus[f] = newStatus;
         DrawFilters();
 
-        State.FilterCount = (State.FilterStatus[1] == 8 ? 1 : 0) +
-                            (State.FilterStatus[2] == 8 ? 1 : 0) +
-                            (State.FilterStatus[3] == 8 ? 1 : 0);
+        State.FilterCount = (State.FilterStatus[1] == ThreeMileIsland.FilterStatus.Clean ? 1 : 0) +
+                            (State.FilterStatus[2] == ThreeMileIsland.FilterStatus.Clean ? 1 : 0) +
+                            (State.FilterStatus[3] == ThreeMileIsland.FilterStatus.Clean ? 1 : 0);
     }
 
     public override void ShowLabel()

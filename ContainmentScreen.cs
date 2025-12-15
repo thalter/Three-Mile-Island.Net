@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 0: Containment Building view
 /// Shows the reactor containment with pressurizer, steamer, and primary cooling system
 /// </summary>
-public class ContainmentScreen : GameScreen
+public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public ContainmentScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Graphics.Clear();
@@ -411,23 +406,23 @@ public class ContainmentScreen : GameScreen
     private void DrawPumps()
     {
         // Pumps A, B, C (1-3)
-        Graphics.SetColor(State.PumpActive[1]);
+        Graphics.SetColor(State.PumpStatus[1]);
         Graphics.VLine(24, 26, 24);
 
-        Graphics.SetColor(State.PumpActive[2]);
+        Graphics.SetColor(State.PumpStatus[2]);
         Graphics.VLine(24, 26, 25);
 
-        Graphics.SetColor(State.PumpActive[3]);
+        Graphics.SetColor(State.PumpStatus[3]);
         Graphics.VLine(24, 26, 26);
 
         // Pumps D, E, F (4-6)
-        Graphics.SetColor(State.PumpActive[4]);
+        Graphics.SetColor(State.PumpStatus[4]);
         Graphics.VLine(27, 29, 31);
 
-        Graphics.SetColor(State.PumpActive[5]);
+        Graphics.SetColor(State.PumpStatus[5]);
         Graphics.VLine(27, 29, 32);
 
-        Graphics.SetColor(State.PumpActive[6]);
+        Graphics.SetColor(State.PumpStatus[6]);
         Graphics.VLine(27, 29, 33);
     }
 
@@ -480,11 +475,11 @@ public class ContainmentScreen : GameScreen
 
     private void TogglePump(int u)
     {
-        if (State.PumpActive[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (State.PumpStatus[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        int c = State.PumpActive[u] == 1 ? 12 : 1;
-        State.PumpActive[u] = c;
+        int c = State.PumpStatus[u] == 1 ? 12 : 1;
+        State.PumpStatus[u] = c;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }

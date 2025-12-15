@@ -1,16 +1,11 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 6: Operational Status view
 /// Shows all critical reactor readings and warning indicators
 /// </summary>
-public class OperationalStatusScreen : GameScreen
+public class OperationalStatusScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
 {
-    public OperationalStatusScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-        : base(state, graphics, sound) { }
-
     public override void Draw()
     {
         Console.Clear();
@@ -36,7 +31,7 @@ public class OperationalStatusScreen : GameScreen
         ShowGaugeValue(1, "CORE TEMP:", $"{State.Temperature} DEG");
         ShowGaugeValue(2, "CTRL RODS:", $"{State.ControlRodTemp} DEG");
         ShowGaugeValue(3, "PCS PRES:", $"{State.BuildingBuffer[2] * 100 + 1200} PSI");
-        ShowGaugeValue(4, "PMPS REQ'D:", $"{State.PumpCount}");
+        ShowGaugeValue(4, "PMPS REQ'D:", $"{State.PumpsRequired}");
         ShowGaugeValue(5, "CNTMT PRES:", $"{State.BuildingBuffer[1]}{(State.BuildingBuffer[1] > 0 ? "00" : "")} PSI");
         ShowGaugeValue(6, "CNTMT WTR:", $"{State.BuildingBuffer[7]}{(State.BuildingBuffer[7] > 0 ? ",000" : "")} GAL");
         ShowGaugeValue(7, "PMP HSE WTR:", $"{State.BuildingBuffer[10]}{(State.BuildingBuffer[10] > 0 ? ",000" : "")} GAL");

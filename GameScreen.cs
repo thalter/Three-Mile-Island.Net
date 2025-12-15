@@ -1,22 +1,13 @@
-using System;
-
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Base class for all game screens
 /// </summary>
-public abstract class GameScreen
+public abstract class GameScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
 {
-    protected GameState State { get; }
-    protected LowResGraphics Graphics { get; }
-    protected SoundSystem Sound { get; }
-
-    protected GameScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
-    {
-        State = state;
-        Graphics = graphics;
-        Sound = sound;
-    }
+    protected GameState State { get; } = state;
+    protected LowResGraphics Graphics { get; } = graphics;
+    protected SoundSystem Sound { get; } = sound;
 
     /// <summary>
     /// Draw the screen graphics
@@ -44,27 +35,5 @@ public abstract class GameScreen
     public virtual void Render()
     {
         Graphics.Render(0);
-    }
-
-    /// <summary>
-    /// Helper to write status line at bottom
-    /// </summary>
-    protected void WriteStatusLine()
-    {
-        Console.SetCursorPosition(0, 21);
-        Console.Write($"TEMP={State.Temperature}  ");
-        Console.SetCursorPosition(19, 21);
-        Console.Write($"CNT={State.PumpCount}");
-    }
-
-    /// <summary>
-    /// Helper to write time at bottom
-    /// </summary>
-    protected void WriteTimeLine()
-    {
-        Console.SetCursorPosition(16, 23);
-        Console.ForegroundColor = ConsoleColor.DarkGray;
-        Console.Write(State.FormatTime(State.SimulationCount, true));
-        Console.ResetColor();
     }
 }
