@@ -368,35 +368,35 @@ public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSy
     private void DrawValves()
     {
         // Valve 1 - Steam
-        Graphics.SetColor(State.ValveActive[1]);
+        Graphics.SetColor((int)State.ValveStatus[1]);
         Graphics.Plot(23, 3);
 
         // Valve 2 - Feedwater
-        Graphics.SetColor(State.ValveActive[2]);
+        Graphics.SetColor((int)State.ValveStatus[2]);
         Graphics.Plot(37, 9);
 
         // Valve 3
-        Graphics.SetColor(State.ValveActive[3]);
+        Graphics.SetColor((int)State.ValveStatus[3]);
         Graphics.Plot(37, 14);
 
         // Valve 4
-        Graphics.SetColor(State.ValveActive[4]);
+        Graphics.SetColor((int)State.ValveStatus[4]);
         Graphics.Plot(15, 29);
 
         // Valve 5
-        Graphics.SetColor(State.ValveActive[5]);
+        Graphics.SetColor((int)State.ValveStatus[5]);
         Graphics.Plot(13, 32);
 
         // Valve 6
-        Graphics.SetColor(State.ValveActive[6]);
+        Graphics.SetColor((int)State.ValveStatus[6]);
         Graphics.Plot(11, 34);
 
         // Valve 7
-        Graphics.SetColor(State.ValveActive[7]);
+        Graphics.SetColor((int)State.ValveStatus[7]);
         Graphics.Plot(9, 36);
 
         // Valve 8
-        Graphics.SetColor(State.ValveActive[8]);
+        Graphics.SetColor((int)State.ValveStatus[8]);
         Graphics.Plot(2, 35);
     }
 
@@ -406,23 +406,23 @@ public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSy
     private void DrawPumps()
     {
         // Pumps A, B, C (1-3)
-        Graphics.SetColor(State.PumpStatus[1]);
+        Graphics.SetColor((int)State.PumpStatus[1]);
         Graphics.VLine(24, 26, 24);
 
-        Graphics.SetColor(State.PumpStatus[2]);
+        Graphics.SetColor((int)State.PumpStatus[2]);
         Graphics.VLine(24, 26, 25);
 
-        Graphics.SetColor(State.PumpStatus[3]);
+        Graphics.SetColor((int)State.PumpStatus[3]);
         Graphics.VLine(24, 26, 26);
 
         // Pumps D, E, F (4-6)
-        Graphics.SetColor(State.PumpStatus[4]);
+        Graphics.SetColor((int)State.PumpStatus[4]);
         Graphics.VLine(27, 29, 31);
 
-        Graphics.SetColor(State.PumpStatus[5]);
+        Graphics.SetColor((int)State.PumpStatus[5]);
         Graphics.VLine(27, 29, 32);
 
-        Graphics.SetColor(State.PumpStatus[6]);
+        Graphics.SetColor((int)State.PumpStatus[6]);
         Graphics.VLine(27, 29, 33);
     }
 
@@ -475,22 +475,26 @@ public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSy
 
     private void TogglePump(int u)
     {
-        if (State.PumpStatus[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair || 
+            State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        int c = State.PumpStatus[u] == 1 ? 12 : 1;
-        State.PumpStatus[u] = c;
+        State.PumpStatus[u] = State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off 
+            ? ThreeMileIsland.PumpStatus.On 
+            : ThreeMileIsland.PumpStatus.Off;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }
 
     private void ToggleValve(int v)
     {
-        if (State.ValveActive[v] == 0 || State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
+        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair || 
+            State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
             return;
 
-        int c = State.ValveActive[v] == 1 ? 12 : 1;
-        State.ValveActive[v] = c;
+        State.ValveStatus[v] = State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut 
+            ? ThreeMileIsland.ValveStatus.Open 
+            : ThreeMileIsland.ValveStatus.Shut;
         State.ValveCountdown[v] -= State.Rnd.Next(GameState.ValveAdjust1) + GameState.ValveAdjust0;
         DrawValves();
     }

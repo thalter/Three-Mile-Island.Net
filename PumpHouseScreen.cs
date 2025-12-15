@@ -184,11 +184,11 @@ public class PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSyst
     private void DrawValves()
     {
         // Valve 8
-        Graphics.SetColor(State.ValveActive[8]);
+        Graphics.SetColor((int)State.ValveStatus[8]);
         Graphics.Plot(38, 35);
 
         // Valve 19
-        Graphics.SetColor(State.ValveActive[19]);
+        Graphics.SetColor((int)State.ValveStatus[19]);
         Graphics.Plot(19, 34);
     }
 
@@ -198,23 +198,23 @@ public class PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSyst
     private void DrawPumps()
     {
         // Pumps S, T, U (19-21)
-        Graphics.SetColor(State.PumpStatus[19]);
+        Graphics.SetColor((int)State.PumpStatus[19]);
         Graphics.VLine(33, 35, 14);
 
-        Graphics.SetColor(State.PumpStatus[20]);
+        Graphics.SetColor((int)State.PumpStatus[20]);
         Graphics.VLine(33, 35, 15);
 
-        Graphics.SetColor(State.PumpStatus[21]);
+        Graphics.SetColor((int)State.PumpStatus[21]);
         Graphics.VLine(33, 35, 16);
 
         // Pumps V, W, X (22-24)
-        Graphics.SetColor(State.PumpStatus[22]);
+        Graphics.SetColor((int)State.PumpStatus[22]);
         Graphics.VLine(34, 36, 28);
 
-        Graphics.SetColor(State.PumpStatus[23]);
+        Graphics.SetColor((int)State.PumpStatus[23]);
         Graphics.VLine(34, 36, 29);
 
-        Graphics.SetColor(State.PumpStatus[24]);
+        Graphics.SetColor((int)State.PumpStatus[24]);
         Graphics.VLine(34, 36, 30);
     }
 
@@ -264,22 +264,26 @@ public class PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSyst
 
     private void TogglePump(int u)
     {
-        if (State.PumpStatus[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair || 
+            State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        int c = State.PumpStatus[u] == 1 ? 12 : 1;
-        State.PumpStatus[u] = c;
+        State.PumpStatus[u] = State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off 
+            ? ThreeMileIsland.PumpStatus.On 
+            : ThreeMileIsland.PumpStatus.Off;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }
 
     private void ToggleValve(int v)
     {
-        if (State.ValveActive[v] == 0 || State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
+        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair || 
+            State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
             return;
 
-        int c = State.ValveActive[v] == 1 ? 12 : 1;
-        State.ValveActive[v] = c;
+        State.ValveStatus[v] = State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut 
+            ? ThreeMileIsland.ValveStatus.Open 
+            : ThreeMileIsland.ValveStatus.Shut;
         State.ValveCountdown[v] -= State.Rnd.Next(GameState.ValveAdjust1) + GameState.ValveAdjust0;
         DrawValves();
     }

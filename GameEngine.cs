@@ -125,15 +125,15 @@ public class GameEngine
     private void InitializeReactor()
     {
         // Turn on key pumps
-        _state.PumpStatus[10] = 12;  // J
-        _state.PumpStatus[13] = 12;  // M
+        _state.PumpStatus[10] = ThreeMileIsland.PumpStatus.On;  // J
+        _state.PumpStatus[13] = ThreeMileIsland.PumpStatus.On;  // M
 
         // Open key valves
-        _state.ValveActive[11] = 12; // K
-        _state.ValveActive[2] = 12;  // B
-        _state.ValveActive[3] = 12;  // C
-        _state.ValveActive[9] = 12;  // I
-        _state.ValveActive[10] = 12; // J
+        _state.ValveStatus[11] = ThreeMileIsland.ValveStatus.Open; // K
+        _state.ValveStatus[2] = ThreeMileIsland.ValveStatus.Open;  // B
+        _state.ValveStatus[3] = ThreeMileIsland.ValveStatus.Open;  // C
+        _state.ValveStatus[9] = ThreeMileIsland.ValveStatus.Open;  // I
+        _state.ValveStatus[10] = ThreeMileIsland.ValveStatus.Open; // J
 
         // Activate turbine
         _state.TurbineActive[1] = TurbineStatus.Online;
@@ -349,8 +349,8 @@ public class GameEngine
     {
         // Valve 1 automatic control
         int v = 1;
-        if ((_state.BuildingOld[3] > 11 && _state.ValveActive[v] == 1) ||
-            (_state.BuildingOld[3] < 2 && _state.ValveActive[v] == 12))
+        if ((_state.BuildingOld[3] > 11 && _state.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut) ||
+            (_state.BuildingOld[3] < 2 && _state.ValveStatus[v] == ThreeMileIsland.ValveStatus.Open))
         {
             ToggleValve(v);
         }
@@ -360,7 +360,7 @@ public class GameEngine
         {
             for (int u = 1; u <= 3; u++)
             {
-                if (_state.PumpStatus[u] == 1)
+                if (_state.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off)
                     TogglePump(u);
             }
             // Trigger emergency notifications
@@ -373,7 +373,7 @@ public class GameEngine
             for (int u = 22; u <= 24; u++)
             {
                 if (_state.PumpCluster8 > 0) break;
-                if (_state.PumpStatus[u] == 1)
+                if (_state.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off)
                     TogglePump(u);
             }
         }
@@ -398,13 +398,13 @@ public class GameEngine
     {
         // Buffer 1: Containment pressure
         _state.BuildingBuffer[1] = _state.BuildingOld[1] +
-            ((_state.ValveActive[1] == 12 && _state.Temperature > GameState.TempThreshold1 ? 1 : 0) -
+            ((_state.ValveStatus[1] == ThreeMileIsland.ValveStatus.Open && _state.Temperature > GameState.TempThreshold1 ? 1 : 0) -
              (_state.Temperature < GameState.TempThreshold3 && _state.BuildingOld[1] > 9 ? 10 : 0) +
              (_state.PrimaryLeak ? 1 : 0));
 
         // Buffer 7: Containment water
         _state.BuildingBuffer[7] = _state.BuildingOld[7] +
-            ((_state.PipeStatus[9] != 10 && (_state.PrimaryLeak || (_state.ValveActive[1] == 12 && _state.BuildingOld[3] > 23)) ? 1 : 0) +
+            ((_state.PipeStatus[9] != 10 && (_state.PrimaryLeak || (_state.ValveStatus[1] == ThreeMileIsland.ValveStatus.Open && _state.BuildingOld[3] > 23)) ? 1 : 0) +
              (_state.BuildingOld[1] > 9 && _state.Temperature < GameState.TempThreshold3 ? 1 : 0) -
              (_state.PipeStatus[12] != 10 && _state.BuildingOld[7] > 0 ? 1 : 0));
 
@@ -413,7 +413,7 @@ public class GameEngine
         _state.BuildingBuffer[7] = Math.Clamp(_state.BuildingBuffer[7], 0, 100);
 
         // Buffer 2: PCS Pressure
-        if (_state.ValveActive[1] == 12)
+        if (_state.ValveStatus[1] == ThreeMileIsland.ValveStatus.Open)
         {
             _state.BuildingBuffer[2] = _state.BuildingOld[2] -
                 ((_state.BuildingOld[3] == 0 && _state.BuildingOld[2] > 1) ? 1 : 0);
@@ -447,7 +447,7 @@ public class GameEngine
         _state.BuildingBuffer[5] = Math.Clamp(_state.BuildingBuffer[5], 0, 100);
 
         // Buffer 3: Pressurizer water
-        if (_state.ValveActive[1] == 12)
+        if (_state.ValveStatus[1] == ThreeMileIsland.ValveStatus.Open)
         {
             _state.BuildingBuffer[3] = _state.BuildingOld[3] -
                 ((_state.BuildingOld[2] > 1 && _state.BuildingOld[3] > 0) ? 1 : 0) +
@@ -485,14 +485,14 @@ public class GameEngine
 
         // Buffer 8-11: Pump house water and radiation
         _state.BuildingBuffer[8] = _state.BuildingOld[8] +
-            ((_state.PumpCluster8 > 0 && _state.ValveActive[8] == 12 && _state.BuildingOld[7] > 0 && _state.BuildingOld[8] < 50) ? 1 : 0);
+            ((_state.PumpCluster8 > 0 && _state.ValveStatus[8] == ThreeMileIsland.ValveStatus.Open && _state.BuildingOld[7] > 0 && _state.BuildingOld[8] < 50) ? 1 : 0);
 
         _state.BuildingBuffer[9] = _state.BuildingOld[9] +
-            ((_state.PumpCluster7 > 0 && _state.ValveActive[19] == 12 && _state.BuildingOld[10] > 0 && _state.BuildingOld[9] < 75) ? 1 : 0);
+            ((_state.PumpCluster7 > 0 && _state.ValveStatus[19] == ThreeMileIsland.ValveStatus.Open && _state.BuildingOld[10] > 0 && _state.BuildingOld[9] < 75) ? 1 : 0);
 
         _state.BuildingBuffer[10] = _state.BuildingOld[10] +
-            ((_state.PumpCluster8 > 0 && _state.ValveActive[8] == 12 && _state.BuildingOld[7] > 0 && _state.BuildingOld[8] == 50) ? 1 : 0) -
-            ((_state.PumpCluster7 > 0 && _state.ValveActive[19] == 12 && _state.BuildingOld[10] > 0 && _state.BuildingOld[9] < 75) ? 1 : 0);
+            ((_state.PumpCluster8 > 0 && _state.ValveStatus[8] == ThreeMileIsland.ValveStatus.Open && _state.BuildingOld[7] > 0 && _state.BuildingOld[8] == 50) ? 1 : 0) -
+            ((_state.PumpCluster7 > 0 && _state.ValveStatus[19] == ThreeMileIsland.ValveStatus.Open && _state.BuildingOld[10] > 0 && _state.BuildingOld[9] < 75) ? 1 : 0);
         _state.BuildingBuffer[10] = Math.Clamp(_state.BuildingBuffer[10], 0, 100);
 
         _state.BuildingBuffer[11] = _state.BuildingOld[11] +
@@ -613,11 +613,11 @@ public class GameEngine
         {
             if (_state.ValveCountdown[v] <= 0)
             {
-                if (_state.ValveActive[v] == 0)
+                if (_state.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair)
                 {
                     // Valve repaired
                     _state.ValveCountdown[v] = _state.Rnd.Next(GameState.ValveFailure1) + GameState.ValveFailure0;
-                    _state.ValveActive[v] = 1;
+                    _state.ValveStatus[v] = ThreeMileIsland.ValveStatus.Shut;
                     _sound.Alert();
                 }
                 else
@@ -634,10 +634,10 @@ public class GameEngine
         {
             if (_state.PumpCountdown[u] <= 0)
             {
-                if (_state.PumpStatus[u] == 0)
+                if (_state.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair)
                 {
                     _state.PumpCountdown[u] = _state.Rnd.Next(GameState.PumpFailure1) + GameState.PumpFailure0;
-                    _state.PumpStatus[u] = 1;
+                    _state.PumpStatus[u] = ThreeMileIsland.PumpStatus.Off;
                     _sound.Alert();
                 }
                 else
@@ -697,14 +697,14 @@ public class GameEngine
     /// </summary>
     private void UpdatePumpClusters()
     {
-        _state.PumpCluster1 = ((_state.PumpStatus[1] == 12) ? 1 : 0) + ((_state.PumpStatus[2] == 12) ? 1 : 0) + ((_state.PumpStatus[3] == 12) ? 1 : 0);
-        _state.PumpCluster2 = ((_state.PumpStatus[4] == 12) ? 1 : 0) + ((_state.PumpStatus[5] == 12) ? 1 : 0) + ((_state.PumpStatus[6] == 12) ? 1 : 0);
-        _state.PumpCluster3 = ((_state.PumpStatus[7] == 12) ? 1 : 0) + ((_state.PumpStatus[8] == 12) ? 1 : 0) + ((_state.PumpStatus[9] == 12) ? 1 : 0);
-        _state.PumpCluster4 = ((_state.PumpStatus[10] == 12) ? 1 : 0) + ((_state.PumpStatus[11] == 12) ? 1 : 0) + ((_state.PumpStatus[12] == 12) ? 1 : 0);
-        _state.PumpCluster5 = ((_state.PumpStatus[13] == 12) ? 1 : 0) + ((_state.PumpStatus[14] == 12) ? 1 : 0) + ((_state.PumpStatus[15] == 12) ? 1 : 0);
-        _state.PumpCluster6 = ((_state.PumpStatus[16] == 12) ? 1 : 0) + ((_state.PumpStatus[17] == 12) ? 1 : 0) + ((_state.PumpStatus[18] == 12) ? 1 : 0);
-        _state.PumpCluster7 = ((_state.PumpStatus[19] == 12) ? 1 : 0) + ((_state.PumpStatus[20] == 12) ? 1 : 0) + ((_state.PumpStatus[21] == 12) ? 1 : 0);
-        _state.PumpCluster8 = ((_state.PumpStatus[22] == 12) ? 1 : 0) + ((_state.PumpStatus[23] == 12) ? 1 : 0) + ((_state.PumpStatus[24] == 12) ? 1 : 0);
+        _state.PumpCluster1 = ((_state.PumpStatus[1] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[2] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[3] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster2 = ((_state.PumpStatus[4] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[5] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[6] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster3 = ((_state.PumpStatus[7] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[8] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[9] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster4 = ((_state.PumpStatus[10] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[11] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[12] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster5 = ((_state.PumpStatus[13] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[14] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[15] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster6 = ((_state.PumpStatus[16] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[17] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[18] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster7 = ((_state.PumpStatus[19] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[20] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[21] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
+        _state.PumpCluster8 = ((_state.PumpStatus[22] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[23] == ThreeMileIsland.PumpStatus.On) ? 1 : 0) + ((_state.PumpStatus[24] == ThreeMileIsland.PumpStatus.On) ? 1 : 0);
     }
 
     /// <summary>
@@ -960,10 +960,13 @@ public class GameEngine
     /// </summary>
     private void ToggleValve(int v)
     {
-        if (_state.ValveActive[v] == 0 || _state.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
+        if (_state.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair || 
+            _state.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
             return;
 
-        _state.ValveActive[v] = _state.ValveActive[v] == 1 ? 12 : 1;
+        _state.ValveStatus[v] = _state.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut 
+            ? ThreeMileIsland.ValveStatus.Open 
+            : ThreeMileIsland.ValveStatus.Shut;
         _state.ValveCountdown[v] -= _state.Rnd.Next(GameState.ValveAdjust1) + GameState.ValveAdjust0;
     }
 
@@ -972,10 +975,13 @@ public class GameEngine
     /// </summary>
     private void TogglePump(int u)
     {
-        if (_state.PumpStatus[u] == 0 || _state.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (_state.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair || 
+            _state.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        _state.PumpStatus[u] = _state.PumpStatus[u] == 1 ? 12 : 1;
+        _state.PumpStatus[u] = _state.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off 
+            ? ThreeMileIsland.PumpStatus.On 
+            : ThreeMileIsland.PumpStatus.Off;
         _state.PumpCountdown[u] -= _state.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         UpdatePumpClusters();
     }

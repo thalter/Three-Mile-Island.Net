@@ -20,9 +20,9 @@ public class GameState
     public int Day { get; set; } = 1;               // DAY - current day
 
     // === Temperature Variables ===
-    public int Temperature { get; set; } = 0;       // TEMP - current core temperature
-    public int OldTemperature { get; set; } = 0;    // OTMP - previous temperature
-    public int ControlRodTemp { get; set; } = 0;    // TMP0 - control rod temperature contribution
+    public int Temperature { get; set; }      // TEMP - current core temperature
+    public int OldTemperature { get; set; }    // OTMP - previous temperature
+    public int ControlRodTemp { get; set; }   // TMP0 - control rod temperature contribution
 
     // === Temperature Constants ===
     public const int TempThreshold1 = 400;   // TMP1
@@ -32,11 +32,11 @@ public class GameState
     public const int TempMeltdown = 2500;    // TMPMD
 
     // === Counter Variable ===
-    public int PumpsRequired { get; set; } = 0;   // CNT - pumps required count
+    public int PumpsRequired { get; set; }   // CNT - pumps required count
 
     // === Valve Arrays (19 valves) ===
     public int[] ValveCountdown { get; } = new int[20];   // VC - valve countdown timers
-    public int[] ValveActive { get; } = new int[20];       // VA - valve status (0=repair, 1=shut, 12=open)
+    public ValveStatus[] ValveStatus { get; } = new ValveStatus[20];       // VA - valve status
     public int[] ValvePipe { get; } = new int[20];         // VP - valve-to-pipe mapping
 
     // === Pipe Array (25 pipes) ===
@@ -44,7 +44,7 @@ public class GameState
 
     // === Pump Arrays (24 pumps) ===
     public int[] PumpCountdown { get; } = new int[25];     // UC - pump countdown timers
-    public int[] PumpStatus { get; } = new int[25];        // PU - pump status (0=repair, 1=off, 12=on)
+    public PumpStatus[] PumpStatus { get; } = new PumpStatus[25];        // PU - pump status (0=repair, 1=off, 12=on)
 
     // === Turbine Arrays (4 turbines) ===
     public int[] TurbineCountdown { get; } = new int[5];   // TC - turbine countdown timers
@@ -236,14 +236,14 @@ public class GameState
         for (int u = 1; u <= 24; u++)
         {
             PumpCountdown[u] = Rnd.Next(PumpFailure1) + PumpFailure0;
-            PumpStatus[u] = 1;  // All pumps start OFF
+            PumpStatus[u] = ThreeMileIsland.PumpStatus.Off;  // All pumps start OFF
         }
 
         // Initialize valves (lines 32510-32514)
         for (int v = 1; v <= 19; v++)
         {
             ValveCountdown[v] = Rnd.Next(ValveFailure1) + ValveFailure0;
-            ValveActive[v] = 1;  // All valves start SHUT
+            ValveStatus[v] = ThreeMileIsland.ValveStatus.Shut;  // All valves start SHUT
         }
 
         // Initialize building buffers (lines 32516-32518)
@@ -348,4 +348,34 @@ public enum FilterStatus
 
     /// <summary>Filter is dirty</summary>
     Dirty = 10
+}
+
+/// <summary>
+/// Represents the status of a valve
+/// </summary>
+public enum ValveStatus
+{
+    /// <summary>Under repair</summary>
+    Repair = 0,
+
+    /// <summary>Valve is shut/closed</summary>
+    Shut = 1,
+
+    /// <summary>Valve is open</summary>
+    Open = 12
+}
+
+/// <summary>
+/// Represents the status of a pump
+/// </summary>
+public enum PumpStatus
+{
+    /// <summary>Under repair</summary>
+    Repair = 0,
+
+    /// <summary>Pump is off</summary>
+    Off = 1,
+
+    /// <summary>Pump is on</summary>
+    On = 12
 }

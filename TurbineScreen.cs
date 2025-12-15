@@ -212,7 +212,9 @@ public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem
         State.PipeStatus[24] = 13;
 
         // Check if any air intake valve is open
-        if (State.ValveActive[13] != 12 && State.ValveActive[14] != 12 && State.ValveActive[15] != 12)
+        if (State.ValveStatus[13] != ThreeMileIsland.ValveStatus.Open && 
+            State.ValveStatus[14] != ThreeMileIsland.ValveStatus.Open && 
+            State.ValveStatus[15] != ThreeMileIsland.ValveStatus.Open)
         {
             Graphics.SetColor(Colors.Gray2);
             State.AirLeak = false;
@@ -306,42 +308,42 @@ public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem
     private void DrawValves()
     {
         // Valve 2
-        Graphics.SetColor(State.ValveActive[2]);
+        Graphics.SetColor((int)State.ValveStatus[2]);
         Graphics.Plot(1, 9);
 
         // Valve 3
-        Graphics.SetColor(State.ValveActive[3]);
+        Graphics.SetColor((int)State.ValveStatus[3]);
         Graphics.Plot(1, 14);
 
         // Valves 9-18
-        Graphics.SetColor(State.ValveActive[9]);
+        Graphics.SetColor((int)State.ValveStatus[9]);
         Graphics.Plot(9, 22);
 
-        Graphics.SetColor(State.ValveActive[10]);
+        Graphics.SetColor((int)State.ValveStatus[10]);
         Graphics.Plot(9, 24);
 
-        Graphics.SetColor(State.ValveActive[11]);
+        Graphics.SetColor((int)State.ValveStatus[11]);
         Graphics.Plot(28, 29);
 
-        Graphics.SetColor(State.ValveActive[12]);
+        Graphics.SetColor((int)State.ValveStatus[12]);
         Graphics.Plot(27, 31);
 
-        Graphics.SetColor(State.ValveActive[13]);
+        Graphics.SetColor((int)State.ValveStatus[13]);
         Graphics.Plot(7, 31);
 
-        Graphics.SetColor(State.ValveActive[14]);
+        Graphics.SetColor((int)State.ValveStatus[14]);
         Graphics.Plot(13, 31);
 
-        Graphics.SetColor(State.ValveActive[15]);
+        Graphics.SetColor((int)State.ValveStatus[15]);
         Graphics.Plot(19, 31);
 
-        Graphics.SetColor(State.ValveActive[16]);
+        Graphics.SetColor((int)State.ValveStatus[16]);
         Graphics.Plot(6, 37);
 
-        Graphics.SetColor(State.ValveActive[17]);
+        Graphics.SetColor((int)State.ValveStatus[17]);
         Graphics.Plot(12, 37);
 
-        Graphics.SetColor(State.ValveActive[18]);
+        Graphics.SetColor((int)State.ValveStatus[18]);
         Graphics.Plot(18, 37);
     }
 
@@ -351,43 +353,43 @@ public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem
     private void DrawPumps()
     {
         // Pumps G, H, I (7-9)
-        Graphics.SetColor(State.PumpStatus[7]);
+        Graphics.SetColor((int)State.PumpStatus[7]);
         Graphics.VLine(17, 19, 8);
 
-        Graphics.SetColor(State.PumpStatus[8]);
+        Graphics.SetColor((int)State.PumpStatus[8]);
         Graphics.VLine(17, 19, 9);
 
-        Graphics.SetColor(State.PumpStatus[9]);
+        Graphics.SetColor((int)State.PumpStatus[9]);
         Graphics.VLine(17, 19, 10);
 
         // Pumps J, K, L (10-12)
-        Graphics.SetColor(State.PumpStatus[10]);
+        Graphics.SetColor((int)State.PumpStatus[10]);
         Graphics.VLine(22, 24, 20);
 
-        Graphics.SetColor(State.PumpStatus[11]);
+        Graphics.SetColor((int)State.PumpStatus[11]);
         Graphics.VLine(22, 24, 21);
 
-        Graphics.SetColor(State.PumpStatus[12]);
+        Graphics.SetColor((int)State.PumpStatus[12]);
         Graphics.VLine(22, 24, 22);
 
         // Pumps M, N, O (13-15)
-        Graphics.SetColor(State.PumpStatus[13]);
+        Graphics.SetColor((int)State.PumpStatus[13]);
         Graphics.VLine(29, 31, 30);
 
-        Graphics.SetColor(State.PumpStatus[14]);
+        Graphics.SetColor((int)State.PumpStatus[14]);
         Graphics.VLine(29, 31, 31);
 
-        Graphics.SetColor(State.PumpStatus[15]);
+        Graphics.SetColor((int)State.PumpStatus[15]);
         Graphics.VLine(29, 31, 32);
 
         // Pumps P, Q, R (16-18)
-        Graphics.SetColor(State.PumpStatus[16]);
+        Graphics.SetColor((int)State.PumpStatus[16]);
         Graphics.VLine(37, 39, 34);
 
-        Graphics.SetColor(State.PumpStatus[17]);
+        Graphics.SetColor((int)State.PumpStatus[17]);
         Graphics.VLine(37, 39, 35);
 
-        Graphics.SetColor(State.PumpStatus[18]);
+        Graphics.SetColor((int)State.PumpStatus[18]);
         Graphics.VLine(37, 39, 36);
     }
 
@@ -466,22 +468,26 @@ public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem
 
     private void TogglePump(int u)
     {
-        if (State.PumpStatus[u] == 0 || State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
+        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair || 
+            State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        int c = State.PumpStatus[u] == 1 ? 12 : 1;
-        State.PumpStatus[u] = c;
+        State.PumpStatus[u] = State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off 
+            ? ThreeMileIsland.PumpStatus.On 
+            : ThreeMileIsland.PumpStatus.Off;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }
 
     private void ToggleValve(int v)
     {
-        if (State.ValveActive[v] == 0 || State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
+        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair || 
+            State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
             return;
 
-        int c = State.ValveActive[v] == 1 ? 12 : 1;
-        State.ValveActive[v] = c;
+        State.ValveStatus[v] = State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut 
+            ? ThreeMileIsland.ValveStatus.Open 
+            : ThreeMileIsland.ValveStatus.Shut;
         State.ValveCountdown[v] -= State.Rnd.Next(GameState.ValveAdjust1) + GameState.ValveAdjust0;
         DrawValves();
     }
