@@ -94,11 +94,11 @@ Avoid:
 
 ## Original Source
 
-This conversion is based on the Apple II Integer BASIC source code from the original Three Mile Island game. I've included the [original source code](https://github.com/thalter/Three-Mile-Island.Net/blob/main/tmi.bas) in this repo, however I make no claims of ownership of it.
+This conversion is based on the Apple II Integer BASIC source code from the original Three Mile Island game. I've included the [original source code](https://github.com/thalter/Three-Mile-Island.Net/blob/main/tmi.bas) in this repo, however I make no claims of ownership of it or representations of its license.
 
 ## License
 
-This is a fan conversion for educational purposes. Original game rights belong to their respective owners.
+This is a fan conversion for non-profit and educational purposes. Original game rights belong to their respective owners.
 <p align="center">
 <img width="560" height="384" alt="three-mile-island_7" src="https://github.com/user-attachments/assets/3814839f-f1c0-4317-9497-11ebd3d62ceb" />
 </p>
