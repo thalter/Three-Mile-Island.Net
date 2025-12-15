@@ -7,7 +7,7 @@
 This is a C# conversion of the classic Three Mile Island nuclear reactor simulation game originally written in Integer BASIC for the Apple II computer.
 
 ## Background
-It has been my life-long dream to bring one of my favorite Apple II games into the 21st century, but converting the original Integer BASIC code always seemed to be a huge lift. I decided to turn this into an exercise in "Vibe Coding" to see if AI could complete what I never had time to do, and I'm so glad I did. Thanks to the help of Claude Sonnet, I was able to do much of the work in a matter of minutes.
+It has been my life-long dream to bring one of my favorite Apple II games into the 21st century, but converting the original Integer BASIC code always seemed to be a huge lift. I decided to turn this into an exercise in "Vibe Coding" to see if AI could complete what I never had time to do, and I'm so glad I did. Thanks to the help of Claude Opus, I was able to do much of the work in a matter of minutes.
 
 Like most AI generated code, Claude's first iteration wouldn't even compile, much less run. However, it gave me a huge leg up, and didn't take much effort on my part to get the code ship-shape and running.
 
@@ -88,9 +88,9 @@ Avoid:
 
 ## Future Plans
 
-- Continue to modernize the code with improved method, property, and variable naming.
-- Separate game logic from presentation layer to allow for a variety of front-ends (Blazor, Maui, Native App, etc.)
-- Restore original low-res graphics and sounds.
+- Continue to modernize the code with improved method, property, and variable naming. *Done*
+- Separate game logic from presentation layer to allow for a variety of front-ends (Blazor, Maui, Native App, etc.) *In Progress*
+- Restore original low-res graphics and sounds. *In Progress*
 
 ## Original Source
 
