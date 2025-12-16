@@ -17,7 +17,7 @@ public class GameEngine
     private DateTime _lastUpdate = DateTime.Now;
     private const int SimulationTickMs = 1000; // Simulation speed
 
-    // Pipe Status of EMpty
+    // Pipe Status of Empty
     public const int Empty = 10;
 
     public GameEngine()
@@ -509,7 +509,10 @@ public class GameEngine
     {
         // CNT is based on control rod temperature
         _state.PumpsRequired = _state.ControlRodTemp / 10 + 1;
-        if (_state.PumpsRequired < 1) _state.PumpsRequired = 1;
+        if (_state.PumpsRequired < 1)
+        {
+            _state.PumpsRequired = 1;
+        }
     }
 
     /// <summary>
