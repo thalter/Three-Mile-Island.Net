@@ -31,8 +31,14 @@ public class GameState
     public const int TempThreshold4 = 750;   // TMP4
     public const int TempMeltdown = 2500;    // TMPMD
 
-    // === Counter Variable ===
-    public int PumpsRequired { get; set; }   // CNT - pumps required count
+    public int PumpsRequired
+    {
+        get
+        {
+            return (TurbineActive[1] == TurbineStatus.Online ? 1 : 0) + (TurbineActive[2] == TurbineStatus.Online ? 1 : 0) +
+                (TurbineActive[3] == TurbineStatus.Online ? 1 : 0) + (TurbineActive[4] == TurbineStatus.Online ? 1 : 0);
+        }
+    }
 
     // === Valve Arrays (19 valves) ===
     public int[] ValveCountdown { get; } = new int[20];   // VC - valve countdown timers

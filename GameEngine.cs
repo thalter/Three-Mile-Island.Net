@@ -381,9 +381,6 @@ public class GameEngine
         // Update building buffers
         UpdateBuildingBuffers();
 
-        // Calculate pump count (CNT)
-        CalculateRequiredPumpCount();
-
         // Calculate electrical output
         CalculateElectricOutput();
 
@@ -500,19 +497,6 @@ public class GameEngine
             ((_state.BuildingOld[10] == 0 && _state.BuildingOld[11] > 0) ? 1 : 0) -
             ((_state.BuildingOld[11] > 1) ? 1 : 0);
         _state.BuildingBuffer[11] = Math.Clamp(_state.BuildingBuffer[11], 0, 1000);
-    }
-
-    /// <summary>
-    /// Calculate required pump count
-    /// </summary>
-    private void CalculateRequiredPumpCount()
-    {
-        // CNT is based on control rod temperature
-        _state.PumpsRequired = _state.ControlRodTemp / 10 + 1;
-        if (_state.PumpsRequired < 1)
-        {
-            _state.PumpsRequired = 1;
-        }
     }
 
     /// <summary>
