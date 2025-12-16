@@ -31,7 +31,7 @@ public class GameState
     public const int TempThreshold4 = 750;   // TMP4
     public const int TempMeltdown = 2500;    // TMPMD
 
-    public int PumpsRequired
+    public int PumpsRequired  // CNT
     {
         get
         {
