@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 6: Operational Status view
 /// Shows all critical reactor readings and warning indicators
 /// </summary>
-public class OperationalStatusScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class OperationalStatusScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<OperationalStatusScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

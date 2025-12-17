@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 0: Containment Building view
 /// Shows the reactor containment with pressurizer, steamer, and primary cooling system
 /// </summary>
-public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<ContainmentScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

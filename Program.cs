@@ -1,3 +1,6 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
@@ -29,7 +32,24 @@ class Program
 
         try
         {
-            var game = new GameEngine();
+            // Configure services
+            var services = new ServiceCollection();
+            
+            // Add logging
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Information);
+            });
+            
+            // Add game services
+            services.AddGameServices();
+            
+            // Build service provider
+            var serviceProvider = services.BuildServiceProvider();
+            
+            // Resolve and run game engine
+            var game = serviceProvider.GetRequiredService<GameEngine>();
             game.Run();
         }
         catch (Exception ex)

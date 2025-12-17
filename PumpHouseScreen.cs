@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 3: Pump House view
 /// Shows emergency pumps, water tanks, and radiation levels
 /// </summary>
-public class PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class PumpHouseScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<PumpHouseScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

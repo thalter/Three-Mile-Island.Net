@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 1: Turbine, Filter, and Condenser view
 /// Shows turbines, air filters, condenser, and cooling tower
 /// </summary>
-public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class TurbineScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<TurbineScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

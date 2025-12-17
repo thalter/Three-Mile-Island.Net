@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
@@ -9,6 +11,7 @@ public class GameEngine
     private readonly GameState _state;
     private readonly LowResGraphics _graphics;
     private readonly SoundSystem _sound;
+    private readonly ILogger<GameEngine> _logger;
     private readonly Dictionary<int, GameScreen> _screens;
 
     private bool _running = true;       
@@ -18,22 +21,36 @@ public class GameEngine
     // Pipe Status of Empty
     public const int Empty = 10;
 
-    public GameEngine()
+    public GameEngine(
+        GameState state,
+        LowResGraphics graphics,
+        SoundSystem sound,
+        ILogger<GameEngine> logger,
+        ContainmentScreen containmentScreen,
+        TurbineScreen turbineScreen,
+        ReactorCoreScreen reactorCoreScreen,
+        PumpHouseScreen pumpHouseScreen,
+        MaintenanceScreen maintenanceScreen,
+        CostAnalysisScreen costAnalysisScreen,
+        OperationalStatusScreen operationalStatusScreen)
     {
-        _state = new GameState();
-        _graphics = new LowResGraphics();
-        _sound = new SoundSystem();
+        _state = state;
+        _graphics = graphics;
+        _sound = sound;
+        _logger = logger;
 
         _screens = new Dictionary<int, GameScreen>
         {
-            { 0, new ContainmentScreen(_state, _graphics, _sound) },
-            { 1, new TurbineScreen(_state, _graphics, _sound) },
-            { 2, new ReactorCoreScreen(_state, _graphics, _sound) },
-            { 3, new PumpHouseScreen(_state, _graphics, _sound) },
-            { 4, new MaintenanceScreen(_state, _graphics, _sound) },
-            { 5, new CostAnalysisScreen(_state, _graphics, _sound) },
-            { 6, new OperationalStatusScreen(_state, _graphics, _sound) }
+            { 0, containmentScreen },
+            { 1, turbineScreen },
+            { 2, reactorCoreScreen },
+            { 3, pumpHouseScreen },
+            { 4, maintenanceScreen },
+            { 5, costAnalysisScreen },
+            { 6, operationalStatusScreen }
         };
+
+        _logger.LogInformation("GameEngine initialized");
     }
 
     /// <summary>

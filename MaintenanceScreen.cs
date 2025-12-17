@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 4: Maintenance Schedule view
 /// Shows status of pumps, valves, and turbines with repair times
 /// </summary>
-public class MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<MaintenanceScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

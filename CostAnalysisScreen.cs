@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 5: Cost Analysis view
 /// Shows operating costs, maintenance, electric demand/output, and profit
 /// </summary>
-public class CostAnalysisScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class CostAnalysisScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<CostAnalysisScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

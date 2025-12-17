@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Screen 2: Reactor Core view
 /// Shows the control rod positions and reactor core cross-section
 /// </summary>
-public class ReactorCoreScreen(GameState state, LowResGraphics graphics, SoundSystem sound) : GameScreen(state, graphics, sound)
+public class ReactorCoreScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger<ReactorCoreScreen> logger) : GameScreen(state, graphics, sound, logger)
 {
     public override void Draw()
     {

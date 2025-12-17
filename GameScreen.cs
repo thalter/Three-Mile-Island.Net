@@ -1,13 +1,16 @@
+using Microsoft.Extensions.Logging;
+
 namespace ThreeMileIsland;
 
 /// <summary>
 /// Base class for all game screens
 /// </summary>
-public abstract class GameScreen(GameState state, LowResGraphics graphics, SoundSystem sound)
+public abstract class GameScreen(GameState state, LowResGraphics graphics, SoundSystem sound, ILogger logger)
 {
     protected GameState State { get; } = state;
     protected LowResGraphics Graphics { get; } = graphics;
     protected SoundSystem Sound { get; } = sound;
+    protected ILogger Logger { get; } = logger;
 
     /// <summary>
     /// Draw the screen graphics
