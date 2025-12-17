@@ -28,7 +28,7 @@ public class OperationalStatusScreen(GameState state, LowResGraphics graphics, S
         }
 
         // Display all gauges
-        ShowGaugeValue(1, "CORE TEMP:", $"{State.Temperature} DEG");
+        ShowGaugeValue(1, "CORE TEMP:", $"{State.CoreTemperature} DEG");
         ShowGaugeValue(2, "CTRL RODS:", $"{State.ControlRodTemp} DEG");
         ShowGaugeValue(3, "PCS PRES:", $"{State.BuildingBuffer[2] * 100 + 1200} PSI");
         ShowGaugeValue(4, "PMPS REQ'D:", $"{State.PumpsRequired}");
@@ -90,7 +90,7 @@ public class OperationalStatusScreen(GameState state, LowResGraphics graphics, S
 
         // Row 2: Temperature warning
         Console.SetCursorPosition(29, 5);
-        if (State.Temperature > GameState.TempThreshold3)
+        if (State.CoreTemperature > GameState.TempThreshold3)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write("TEMP");

@@ -214,7 +214,7 @@ public class ReactorCoreScreen(GameState state, LowResGraphics graphics, SoundSy
     private void UpdateStatusLine()
     {
         Console.SetCursorPosition(0, 21);
-        Console.Write($"TEMP={State.Temperature}  ");
+        Console.Write($"TEMP={State.CoreTemperature}  ");
         Console.SetCursorPosition(19, 21);
         Console.Write($"CNT={State.PumpsRequired}");
     }

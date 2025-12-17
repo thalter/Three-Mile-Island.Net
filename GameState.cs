@@ -20,7 +20,7 @@ public class GameState
     public int Day { get; set; } = 1;               // DAY - current day
 
     // === Temperature Variables ===
-    public int Temperature { get; set; }      // TEMP - current core temperature
+    public int CoreTemperature { get; set; }      // TEMP - current core temperature
     public int OldTemperature { get; set; }    // OTMP - previous temperature
     public int ControlRodTemp { get; set; }   // TMP0 - control rod temperature contribution
 
