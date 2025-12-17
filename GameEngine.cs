@@ -384,9 +384,6 @@ public class GameEngine
         // Update building buffers
         UpdateBuildingBuffers();
 
-        // Calculate pump count (CNT)
-        CalculateRequiredPumpCount();
-
         // Calculate electrical output
         CalculateElectricOutput();
 
@@ -517,6 +514,7 @@ public class GameEngine
         }
     }
 
+    /// <summary>
     /// <summary>
     /// Calculate electrical output (lines 1200, 2360, 2102)
     /// </summary>
