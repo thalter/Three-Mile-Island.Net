@@ -89,13 +89,13 @@ public class MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSy
             return;
         }
 
-        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off)
+        if (State.PumpStatus[u] == PumpStatus.Off)
         {
             Console.Write("OFF");
             return;
         }
 
-        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.On)
+        if (State.PumpStatus[u] == PumpStatus.On)
         {
             Console.Write("ON");
             int c = State.SimulationCount + State.PumpCountdown[u] / State.PumpsRequired;
@@ -136,13 +136,13 @@ public class MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSy
             return;
         }
 
-        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut)
+        if (State.ValveStatus[v] == ValveStatus.Shut)
         {
             Console.Write("SHUT");
             return;
         }
 
-        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Open)
+        if (State.ValveStatus[v] == ValveStatus.Open)
         {
             Console.Write("OPEN");
             int c = State.SimulationCount + State.ValveCountdown[v] / State.PumpsRequired;
@@ -279,18 +279,18 @@ public class MaintenanceScreen(GameState state, LowResGraphics graphics, SoundSy
 
     private void RepairPump(int u)
     {
-        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair) return;
+        if (State.PumpStatus[u] == PumpStatus.Repair) return;
 
-        State.PumpStatus[u] = ThreeMileIsland.PumpStatus.Repair;
+        State.PumpStatus[u] = PumpStatus.Repair;
         State.PumpCountdown[u] = State.Rnd.Next(GameState.PumpRepair1) + GameState.PumpRepair0;
         State.MaintenanceCost += State.Rnd.Next(GameState.PumpMaint1) + GameState.PumpMaint0;
     }
 
     private void RepairValve(int v)
     {
-        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair) return;
+        if (State.ValveStatus[v] == ValveStatus.Repair) return;
 
-        State.ValveStatus[v] = ThreeMileIsland.ValveStatus.Repair;
+        State.ValveStatus[v] = ValveStatus.Repair;
         State.ValveCountdown[v] = State.Rnd.Next(GameState.ValveRepair1) + GameState.ValveRepair0;
         State.MaintenanceCost += GameState.ValveMaint0 + State.Rnd.Next(GameState.ValveMaint1);
     }

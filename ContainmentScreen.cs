@@ -477,26 +477,26 @@ public class ContainmentScreen(GameState state, LowResGraphics graphics, SoundSy
 
     private void TogglePump(int u)
     {
-        if (State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Repair || 
+        if (State.PumpStatus[u] == PumpStatus.Repair || 
             State.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        State.PumpStatus[u] = State.PumpStatus[u] == ThreeMileIsland.PumpStatus.Off 
-            ? ThreeMileIsland.PumpStatus.On 
-            : ThreeMileIsland.PumpStatus.Off;
+        State.PumpStatus[u] = State.PumpStatus[u] == PumpStatus.Off 
+            ? PumpStatus.On 
+            : PumpStatus.Off;
         State.PumpCountdown[u] -= State.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         DrawPumps();
     }
 
     private void ToggleValve(int v)
     {
-        if (State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Repair || 
+        if (State.ValveStatus[v] == ValveStatus.Repair || 
             State.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
             return;
 
-        State.ValveStatus[v] = State.ValveStatus[v] == ThreeMileIsland.ValveStatus.Shut 
-            ? ThreeMileIsland.ValveStatus.Open 
-            : ThreeMileIsland.ValveStatus.Shut;
+        State.ValveStatus[v] = State.ValveStatus[v] == ValveStatus.Shut 
+            ? ValveStatus.Open 
+            : ValveStatus.Shut;
         State.ValveCountdown[v] -= State.Rnd.Next(GameState.ValveAdjust1) + GameState.ValveAdjust0;
         DrawValves();
     }
