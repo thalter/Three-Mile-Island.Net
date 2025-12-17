@@ -503,19 +503,6 @@ public class GameEngine
     }
 
     /// <summary>
-    /// Calculate required pump count
-    /// </summary>
-    private void CalculateRequiredPumpCount()
-    {
-        _state.PumpsRequired = 1;
-        if (_state.CoreTemperature > 400)
-        {
-            _state.PumpsRequired = 2;
-        }
-    }
-
-    /// <summary>
-    /// <summary>
     /// Calculate electrical output (lines 1200, 2360, 2102)
     /// </summary>
     private void CalculateElectricOutput()
