@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace ThreeMileIsland;
 
@@ -30,6 +31,14 @@ class Program
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
+        // Configure Serilog
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.File("logs/tmi-.log",
+                rollingInterval: RollingInterval.Minute,
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+
         try
         {
             // Configure services
@@ -38,7 +47,8 @@ class Program
             // Add logging
             services.AddLogging(builder =>
             {
-                builder.AddConsole();
+                builder.ClearProviders();
+                builder.AddSerilog(dispose: true);
                 builder.SetMinimumLevel(LogLevel.Information);
             });
             

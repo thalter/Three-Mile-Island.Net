@@ -10,8 +10,8 @@ public class GameEngine
 {
     private readonly GameState _state;
     private readonly LowResGraphics _graphics;
-    private readonly SoundSystem _sound;
     private readonly ILogger<GameEngine> _logger;
+    private readonly SoundSystem _sound;
     private readonly Dictionary<int, GameScreen> _screens;
 
     private bool _running = true;       
@@ -50,7 +50,7 @@ public class GameEngine
             { 6, operationalStatusScreen }
         };
 
-        _logger.LogInformation("GameEngine initialized");
+        logger.LogInformation("GameEngine initialized");
     }
 
     /// <summary>
@@ -309,12 +309,14 @@ public class GameEngine
     private void RunSimulationTick()
     {
         _sound.Click();
+        _logger.LogDebug("Simulation tick started");
+        _logger.LogDebug("Old temperature: {OldTemperature}", _state.OldTemperature);
 
         // Store old temperature
         _state.OldTemperature = _state.CoreTemperature;
 
         // Calculate temperature changes
-        CalculateTemperature();
+        CalculateCoreTemperature();
 
         // Run main simulation
         RunCoreSimulation();
@@ -348,9 +350,9 @@ public class GameEngine
     }
 
     /// <summary>
-    /// Calculate temperature (lines 1004-1006)
+    /// Calculate core temperature (lines 1004-1006)
     /// </summary>
-    private void CalculateTemperature()
+    private void CalculateCoreTemperature()
     {
         // Temperature increases from control rods, decreases from cooling
         _state.CoreTemperature += (_state.BuildingBuffer[2] < _state.PumpsRequired ? 1 : 0) * _state.PumpsRequired;
