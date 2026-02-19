@@ -135,26 +135,41 @@ public class GameEngine
     }
 
     /// <summary>
-    /// Initialize reactor to running state (lines 32740-32746)
+    /// Initialize reactor to running state per MUSE guidelines.
+    /// Replays the original BASIC command string from lines 32740-32746:
+    /// "1JM&lt;ctrl-V&gt;KBCIJ&lt;ctrl-F&gt;AB&lt;ctrl-T&gt;A0DE&lt;ctrl-V&gt;GFH" + control rod raises.
     /// </summary>
     private void InitializeReactor()
     {
-        // Turn on key pumps
+        // Screen 1 (Turbine) - Turn on pumps J(10), M(13)
         _state.PumpStatus[10] = PumpStatus.On;  // J
         _state.PumpStatus[13] = PumpStatus.On;  // M
 
-        // Open key valves
+        // Screen 1 - Open valves K(11), B(2), C(3), I(9), J(10)
         _state.ValveStatus[11] = ValveStatus.Open; // K
         _state.ValveStatus[2] = ValveStatus.Open;  // B
         _state.ValveStatus[3] = ValveStatus.Open;  // C
         _state.ValveStatus[9] = ValveStatus.Open;  // I
         _state.ValveStatus[10] = ValveStatus.Open; // J
 
-        // Activate turbine
+        // Screen 1 - Activate filters A(1), B(2) (set to clean)
+        _state.FilterStatus[1] = FilterStatus.Clean;
+        _state.FilterStatus[2] = FilterStatus.Clean;
+
+        // Screen 1 - Activate turbine A(1)
         _state.TurbineActive[1] = TurbineStatus.Online;
         _state.TurbineCount = 1;
 
-        // Raise control rods to generate heat
+        // Screen 0 (Containment) - Turn on pumps D(4), E(5)
+        _state.PumpStatus[4] = PumpStatus.On;   // D
+        _state.PumpStatus[5] = PumpStatus.On;   // E
+
+        // Screen 0 - Open valves G(7), F(6), H(8)
+        _state.ValveStatus[7] = ValveStatus.Open;  // G
+        _state.ValveStatus[6] = ValveStatus.Open;  // F
+        _state.ValveStatus[8] = ValveStatus.Open;  // H
+
+        // Screen 2 (Reactor Core) - Raise all 18 control rods to position 30
         for (int r = 1; r <= 18; r++)
         {
             _state.ControlRodPosition[r] = 30;
@@ -166,8 +181,13 @@ public class GameEngine
         _state.ControlRodClusterCount[1] = 9 * 30;
         _state.ControlRodClusterCount[2] = 9 * 30;
 
-        // Raise core temperature so that electricity is generated
+        // Set initial core temperature
         _state.CoreTemperature = 200;
+
+        // Update pump cluster counts and pipe statuses to reflect the new state
+        UpdatePumpClusters();
+        UpdateTurbineCount();
+        UpdatePipeStatuses();
     }
 
     /// <summary>
@@ -350,10 +370,14 @@ public class GameEngine
     }
 
     /// <summary>
-    /// Calculate core temperature (lines 1004-1006)
+    /// Calculate core temperature (lines 1002-1006)
     /// </summary>
     private void CalculateCoreTemperature()
     {
+        // Line 1002: IF NOT TEMP THEN 1010 - skip calculation when reactor is cold
+        if (_state.CoreTemperature == 0)
+            return;
+
         // Temperature increases from control rods, decreases from cooling
         _state.CoreTemperature += (_state.BuildingBuffer[2] < _state.PumpsRequired ? 1 : 0) * _state.PumpsRequired;
         _state.CoreTemperature += (_state.PipeStatus[3] == 10 || _state.BuildingBuffer[4] == 14 ? 1 : 0) * _state.PumpsRequired;
@@ -402,6 +426,9 @@ public class GameEngine
 
         // Update building buffers
         UpdateBuildingBuffers();
+
+        // Update pipe statuses based on current state (lines 10770, 1062-1064)
+        UpdatePipeStatuses();
 
         // Calculate electrical output
         CalculateElectricOutput();
@@ -490,10 +517,11 @@ public class GameEngine
         }
         _state.BuildingBuffer[3] = Math.Clamp(_state.BuildingBuffer[3], 0, 24);
 
-        // Buffer 4: Steamer level
+        // Buffer 4: Steamer level (line 1060)
+        // Original: BU(4) = BO(4) + (PI(2) = 10 AND TEMP > TMP1 AND BO(4) < 14) - (PI(2) # 10 AND BO(4))
         _state.BuildingBuffer[4] = _state.BuildingOld[4] +
-            (((_state.PipeStatus[2] == 10 || _state.PipeStatus[1] == 10) && _state.CoreTemperature > GameState.TempThreshold1 && _state.BuildingOld[4] < 14) ? 1 : 0) -
-            ((_state.PipeStatus[17] != 10 && _state.PipeStatus[1] != 10 && _state.BuildingOld[4] > 0) ? 1 : 0);
+            ((_state.PipeStatus[2] == Empty && _state.CoreTemperature > GameState.TempThreshold1 && _state.BuildingOld[4] < 14) ? 1 : 0) -
+            ((_state.PipeStatus[2] != Empty && _state.BuildingOld[4] > 0) ? 1 : 0);
         _state.BuildingBuffer[4] = Math.Clamp(_state.BuildingBuffer[4], 0, 14);
 
         // Buffer 6: Condenser level
@@ -973,10 +1001,11 @@ public class GameEngine
             _state.ValveCountdown[v] > GameState.ValveFailure1 + GameState.ValveFailure0)
             return;
 
-        _state.ValveStatus[v] = _state.ValveStatus[v] == ValveStatus.Shut 
-            ? ValveStatus.Open 
+        _state.ValveStatus[v] = _state.ValveStatus[v] == ValveStatus.Shut
+            ? ValveStatus.Open
             : ValveStatus.Shut;
         _state.ValveCountdown[v] -= _state.Rnd.Next(GameState.ValveAdjust1) + GameState.ValveAdjust0;
+        UpdatePipeStatuses();
     }
 
     /// <summary>
@@ -984,14 +1013,117 @@ public class GameEngine
     /// </summary>
     private void TogglePump(int u)
     {
-        if (_state.PumpStatus[u] == PumpStatus.Repair || 
+        if (_state.PumpStatus[u] == PumpStatus.Repair ||
             _state.PumpCountdown[u] > GameState.PumpFailure1 + GameState.PumpFailure0)
             return;
 
-        _state.PumpStatus[u] = _state.PumpStatus[u] == PumpStatus.Off 
-            ? PumpStatus.On 
+        _state.PumpStatus[u] = _state.PumpStatus[u] == PumpStatus.Off
+            ? PumpStatus.On
             : PumpStatus.Off;
         _state.PumpCountdown[u] -= _state.Rnd.Next(GameState.PumpAdjust1) + GameState.PumpAdjust0;
         UpdatePumpClusters();
+        UpdatePipeStatuses();
+    }
+
+    /// <summary>
+    /// Update pipe statuses based on current valve, pump, and buffer states.
+    /// Consolidates the pipe flow logic from the original BASIC subroutines
+    /// (4000-4975 for valves, 5000-5600 for pumps, 10770 for pipe 3,
+    /// and lines 1062-1064 for pipe 1 dynamic updates).
+    /// </summary>
+    private void UpdatePipeStatuses()
+    {
+        // Pipe 3: Hot leg from core to steamer - based on PCS pressure (lines 10770-10775)
+        if (_state.BuildingBuffer[2] > 0 && _state.PipeStatus[3] == Empty)
+            _state.PipeStatus[3] = 2;
+        else if (_state.BuildingBuffer[2] == 0 && _state.PipeStatus[3] != Empty)
+            _state.PipeStatus[3] = Empty;
+
+        // Pipe 10: ECCS pump cluster 1 output (lines 5000-5012)
+        _state.PipeStatus[10] = _state.PumpCluster1 > 0 ? 2 : Empty;
+
+        // Pipe 11: Through valve D(4) from ECCS (lines 5004-5006, 4075-4093)
+        _state.PipeStatus[11] = (_state.PumpCluster1 > 0 && _state.ValveStatus[4] == ValveStatus.Open)
+            ? _state.PipeStatus[10] : Empty;
+
+        // Pipe 4: Pump cluster 2 output (lines 5075-5077)
+        _state.PipeStatus[4] = _state.PumpCluster2 > 0 ? 2 : Empty;
+
+        // Pipes 5, 6, 7: Through valves E(5), F(6), G(7) from secondary loop (lines 5078-5084)
+        for (int i = 5; i <= 7; i++)
+        {
+            _state.PipeStatus[i] = (_state.PumpCluster2 > 0 && _state.ValveStatus[i] == ValveStatus.Open)
+                ? _state.PipeStatus[4] : Empty;
+        }
+
+        // Pipe 8: Secondary cooling output - flows when any of valves 5/6/7 open with pumps (lines 5085)
+        _state.PipeStatus[8] = (_state.PumpCluster2 > 0 &&
+            (_state.ValveStatus[5] == ValveStatus.Open ||
+             _state.ValveStatus[6] == ValveStatus.Open ||
+             _state.ValveStatus[7] == ValveStatus.Open))
+            ? _state.PipeStatus[4] : Empty;
+
+        // Pipe 9: Pressurizer loop - combines ECCS (pipe 11) and secondary (pipe 8) (lines 5007, 5086)
+        if (_state.PipeStatus[8] != Empty)
+            _state.PipeStatus[9] = _state.PipeStatus[8];
+        else if (_state.PipeStatus[11] != Empty)
+            _state.PipeStatus[9] = _state.PipeStatus[11];
+        else
+            _state.PipeStatus[9] = Empty;
+
+        // Pipe 20: ESCS pump cluster 3 output (lines 5150-5151)
+        _state.PipeStatus[20] = _state.PumpCluster3 > 0 ? 2 : Empty;
+
+        // Pipes 14, 15: Through valves I(9), J(10) from ESCS (lines 5153-5157, 4200-4225)
+        _state.PipeStatus[14] = (_state.PumpCluster3 > 0 && _state.ValveStatus[9] == ValveStatus.Open)
+            ? _state.PipeStatus[20] : Empty;
+        _state.PipeStatus[15] = (_state.PumpCluster3 > 0 && _state.ValveStatus[10] == ValveStatus.Open)
+            ? _state.PipeStatus[20] : Empty;
+
+        // Pipe 13: ESCS combined output (lines 5157-5158, 5170-5172)
+        if (_state.PipeStatus[14] != Empty || _state.PipeStatus[15] != Empty)
+            _state.PipeStatus[13] = 7;
+        else
+            _state.PipeStatus[13] = _state.PipeStatus[16]; // Falls back to filter bypass
+
+        // Pipe 2: Cold leg input through valve C(3) (lines 4050-4060, 5159-5160)
+        _state.PipeStatus[2] = (_state.ValveStatus[3] == ValveStatus.Open && _state.PipeStatus[13] != Empty)
+            ? _state.PipeStatus[13] : Empty;
+
+        // Pipe 18: Pump cluster 4 output (lines 5225-5230)
+        _state.PipeStatus[18] = _state.PumpCluster4 > 0 ? 6 : Empty;
+
+        // Pipe 21: Through valve K(11) - uses PumpCluster5 (lines 4250-4265)
+        _state.PipeStatus[21] = (_state.ValveStatus[11] == ValveStatus.Open && _state.PumpCluster5 > 0)
+            ? 6 : Empty;
+
+        // Pipe 22: Through valve L(12) (lines 4275→4255)
+        _state.PipeStatus[22] = (_state.ValveStatus[12] == ValveStatus.Open && _state.PumpCluster5 > 0)
+            ? 6 : Empty;
+
+        // Pipe 17: Condenser feed - combines pump cluster 4 and valve K/L outputs (lines 4271-4272, 5231)
+        if (_state.PipeStatus[21] != Empty || _state.PipeStatus[22] != Empty)
+            _state.PipeStatus[17] = 6;
+        else if (_state.PumpCluster4 > 0)
+            _state.PipeStatus[17] = _state.PipeStatus[18];
+        else
+            _state.PipeStatus[17] = Empty;
+
+        // Pipe 1: Steam pipe from steamer to turbine (lines 1062-1064, 4025-4040)
+        if (_state.BuildingOld[4] >= 14 && _state.PipeStatus[1] != Empty)
+            _state.PipeStatus[1] = Empty;
+        else if (_state.BuildingOld[4] < 14 && _state.PipeStatus[1] == Empty && _state.ValveStatus[2] == ValveStatus.Open)
+            _state.PipeStatus[1] = 14;
+
+        // Pipe 12: Containment drain through valve H(8) (lines 4175-4192)
+        _state.PipeStatus[12] = (_state.ValveStatus[8] == ValveStatus.Open && _state.PumpCluster8 > 0 && _state.BuildingBuffer[7] > 0)
+            ? 2 : Empty;
+
+        // Pipe 19: Filter pump output (lines 5300-5306)
+        _state.PipeStatus[19] = _state.PumpCluster5 > 0 ? 6 : Empty;
+
+        // Pipe 23: Pump house discharge through valve S(19) (lines 4450-4462)
+        _state.PipeStatus[23] = (_state.ValveStatus[19] == ValveStatus.Open && _state.PumpCluster7 > 0 && _state.BuildingBuffer[10] > 0)
+            ? 2 : Empty;
     }
 }
